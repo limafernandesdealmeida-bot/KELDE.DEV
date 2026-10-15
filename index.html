@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KELDE.dev — Mikélder | Engenharia de Software & Blog Científico</title>
+  <meta name="description" content="Portfólio e Laboratório de Estudos de Mikélder (KELDE). Engenharia de Software, Arquitetura, IA, Dados e DevOps." />
+  
+  <!-- Fontes do Google: Inter (Leitura limpa) e JetBrains Mono (Toque de Engenharia/Código) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Barra de Progresso de Leitura Global (Gatilho de Dopamina) -->
+  <div id="barra-progresso-topo" class="progress-bar-top"></div>
+
+  <!-- Cabeçalho Fixo com Glassmorphism -->
+  <header class="navbar">
+    <div class="container nav-content">
+      <a href="#" class="brand-logo" aria-label="Início KELDE.dev">
+        <span id="nav-marca" class="brand-main">KELDE</span><span id="nav-sufixo" class="brand-suffix">.dev</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Navegação Principal">
+        <a href="#blog">Blog & Artigos</a>
+        <a href="#roadmap">Evolução</a>
+        <a href="#projetos">Vitrine & Lab</a>
+        <a href="#sobre">Sobre & Contato</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="btn-tema" class="theme-toggle" aria-label="Alternar entre tema claro e escuro" title="Alternar Tema Claro/Escuro">
+          <span id="icone-tema">☀️</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO SECTION: Neuromarketing & Autoridade Prospectiva -->
+    <section class="hero container">
+      <div class="status-pill">
+        <span class="pulse-dot"></span>
+        <span id="hero-status">Carregando status...</span>
+      </div>
+
+      <p class="hero-identidade">
+        Olá, eu sou <strong id="hero-nome">Mikélder</strong> • <span id="hero-instituicao" class="mono-accent"></span>
+      </p>
+
+      <h1 id="hero-headline" class="hero-title">
+        Carregando visão...
+      </h1>
+
+      <p id="hero-subheadline" class="hero-subtitle"></p>
+
+      <div class="hero-cta-group">
+        <a href="#blog" class="btn btn-primary">Explorar Diário de Estudos ↓</a>
+        <a href="#sobre" class="btn btn-secondary">Conectar Comigo</a>
+      </div>
+    </section>
+
+    <!-- SEÇÃO DO BLOG (Requisito 1-C e 4-C: Motor de Busca, Filtros e Tempo de Leitura) -->
+    <section id="blog" class="section container">
+      <div class="section-header">
+        <div>
+          <span class="section-tag">LEARNING IN PUBLIC</span>
+          <h2 class="section-title">Artigos & Notas de Engenharia</h2>
+        </div>
+        <p class="section-desc">Documentando minha jornada acadêmica rumo à especialização, Mestrado e Doutorado.</p>
+      </div>
+
+      <!-- Controles do Motor do Blog: Busca em Tempo Real + Filtro de Categorias -->
+      <div class="blog-controls">
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input 
+            type="search" 
+            id="input-busca" 
+            placeholder="Buscar por tema (ex: Arquitetura, Dados, Scrum, IA...)" 
+            aria-label="Buscar artigos"
+          />
+        </div>
+        <div id="filtros-categoria" class="category-pills" role="tablist">
+          <!-- Gerado automaticamente pelo app.js -->
+        </div>
+      </div>
+
+      <!-- Lista de Artigos -->
+      <div id="grid-artigos" class="articles-grid">
+        <!-- Gerado automaticamente pelo app.js -->
+      </div>
+    </section>
+
+    <!-- SEÇÃO DE EVOLUÇÃO / ROADMAP (Requisito 3-D: Viés de Progresso Dotado) -->
+    <section id="roadmap" class="section container">
+      <div class="section-header">
+        <div>
+          <span class="section-tag">TRAJETÓRIA CIENTÍFICA & TÉCNICA</span>
+          <h2 class="section-title">Matriz de Evolução</h2>
+        </div>
+        <p class="section-desc">O mapa estratégico entre os fundamentos da graduação e a pesquisa científica avançada.</p>
+      </div>
+
+      <div id="grid-roadmap" class="roadmap-grid">
+        <!-- Gerado automaticamente pelo app.js -->
+      </div>
+    </section>
+
+    <!-- SEÇÃO DE PROJETOS / ESTUDOS DE CASO (Requisito 3-D) -->
+    <section id="projetos" class="section container">
+      <div class="section-header">
+        <div>
+          <span class="section-tag">VITRINE & LABORATÓRIO</span>
+          <h2 class="section-title">Estudos de Caso & Experimentos</h2>
+        </div>
+        <p class="section-desc">Engenharia de software vai muito além da sintaxe: processos ágeis, infraestrutura e arquitetura.</p>
+      </div>
+
+      <div id="grid-projetos" class="projects-grid">
+        <!-- Gerado automaticamente pelo app.js -->
+      </div>
+    </section>
+
+    <!-- SEÇÃO SOBRE & CONTATO (Com Storytelling do Apelido KELDE) -->
+    <section id="sobre" class="section container">
+      <div class="about-card">
+        <div class="about-content">
+          <span class="section-tag">A HISTÓRIA POR TRÁS DA MARCA</span>
+          <h2 class="section-title">De Mikélder para <span class="mono-accent">KELDE</span></h2>
+          <p id="texto-sobre" class="about-text"></p>
+          
+          <div class="academic-highlight">
+            <strong>🎯 Visão de Longo Prazo:</strong> Atualmente construindo base sólida em Engenharia de Software na Unicesumar, com planejamento voltado à pós-graduação <em>Stricto Sensu</em> (Mestrado e Doutorado) em Ciência da Computação.
+          </div>
+        </div>
+
+        <div class="contact-box">
+          <h3>Vamos conversar?</h3>
+          <p class="contact-sub">Aberto para conexões no LinkedIn, grupos de pesquisa, projetos acadêmicos e mentoria.</p>
+          
+          <div id="lista-contatos" class="contact-links">
+            <!-- Gerado automaticamente pelo app.js -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>© <span id="ano-atual"></span> <strong>KELDE.dev</strong> — Desenvolvido com Arquitetura Modular para <strong>Mikélder</strong>.</p>
+      <p class="footer-tech">Arquitetura SoC • HTML5 Semântico • CSS Design Tokens • Vanilla JS</p>
+    </div>
+  </footer>
+
+  <!-- MODAL DE LEITURA INSTANTÂNEA (SPA - Requisito 4-C) -->
+  <div id="modal-leitura" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-container">
+      <div id="barra-progresso-modal" class="modal-progress-bar"></div>
+      
+      <header class="modal-header">
+        <div class="modal-meta">
+          <span id="modal-categoria" class="badge-cat">Categoria</span>
+          <span id="modal-data" class="meta-text">Data</span>
+          <span id="modal-tempo" class="meta-text mono-accent">⏱ 3 min de leitura</span>
+        </div>
+        <button id="btn-fechar-modal" class="btn-close-modal" aria-label="Fechar leitura">✕ Fechar (ESC)</button>
+      </header>
+
+      <article class="modal-body" id="modal-scroll-area">
+        <h1 id="modal-titulo" class="modal-article-title">Título do Artigo</h1>
+        <div id="modal-tags" class="card-tags modal-tags-spacing"></div>
+        <div id="modal-conteudo" class="article-prose"></div>
+
+        <div class="modal-author-box">
+          <div>
+            <strong>Escrito por Mikélder (KELDE)</strong>
+            <p>Estudante de Engenharia de Software @ Unicesumar. Gostou dessa reflexão? Vamos debater esse tema lá no meu LinkedIn!</p>
+          </div>
+          <a id="modal-link-linkedin" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">Comentar no LinkedIn ↗</a>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <!-- Importação Modular: Primeiro os Dados, depois o Motor Lógico -->
+  <script src="dados.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

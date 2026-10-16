@@ -8,7 +8,7 @@ const DADOS_PERFIL = {
   nomeCompleto: "Mikélder",
   iniciais: "MK",
   fotoPerfil: "foto.jpg",
-  urlPublica: "urlPublica: "https://keldedev.vercel.app",",
+  urlPublica: "urlPublica: https://keldedev.vercel.app",
 
   instituicao: "Engenharia de Software @ Unicesumar",
   statusAtual: "Disponível para Networking, Pesquisa & Projetos",

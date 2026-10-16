@@ -7,7 +7,7 @@ const DADOS_PERFIL = {
   sufixoMarca: ".dev",
   nomeCompleto: "Mikélder",
   iniciais: "MK",
-  fotoPerfil: "foto.jpg",
+  fotoPerfil: "IMG_20260803_115450.jpg",
   urlPublica: "urlPublica: https://keldedev.vercel.app",
 
   instituicao: "Engenharia de Software @ Unicesumar",

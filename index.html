@@ -3,10 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- CAMADA DE CIBERSEGURANÇA (DEVSECOPS HEADERS) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https: blob:; script-src 'self'; connect-src 'self';" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+
+  <!-- OPEN GRAPH META TAGS (Preview Profissional no LinkedIn e WhatsApp) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="KELDE.dev — Mikélder" />
+  <meta property="og:title" content="KELDE.dev — Mikélder | Engenharia de Software, Arquitetura, IA & DevOps" />
+  <meta property="og:description" content="Portfólio Acadêmico e Laboratório Público de Estudos em Engenharia de Software, Arquitetura de Sistemas, Dados, IA e Automação." />
+  <meta property="og:url" content="https://limafernandesdealmeida-bot.github.io/KELDE.DEV/" />
+
   <title>KELDE.dev — Mikélder | Engenharia de Software & Blog Científico</title>
   <meta name="description" content="Portfólio e Laboratório de Estudos de Mikélder (KELDE). Engenharia de Software, Arquitetura, IA, Dados e DevOps." />
   
-  <!-- Fontes do Google: Inter (Leitura limpa) e JetBrains Mono (Toque de Engenharia/Código) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -15,24 +27,46 @@
 </head>
 <body>
 
-  <!-- Barra de Progresso de Leitura Global (Gatilho de Dopamina) -->
-  <div id="barra-progresso-topo" class="progress-bar-top"></div>
+  <!-- Barra de Progresso de Leitura Global -->
+  <div id="barra-progresso-topo" class="progress-bar-top no-print"></div>
 
-  <!-- Cabeçalho Fixo com Glassmorphism -->
-  <header class="navbar">
+  <!-- CABEÇALHO EXCLUSIVO PARA IMPRESSÃO DO CURRÍCULO EM PDF (Oculto na tela normal) -->
+  <section id="print-cv-header" class="print-only-header">
+    <h1 id="print-nome">Mikélder (KELDE.dev)</h1>
+    <p id="print-instituicao" style="font-weight: 700; margin-bottom: 0.4rem;"></p>
+    <p id="print-headline" style="margin-bottom: 0.6rem;"></p>
+    <p id="print-contatos" style="font-size: 0.85rem;"></p>
+  </section>
+
+  <!-- Cabeçalho Fixo -->
+  <header class="navbar no-print">
     <div class="container nav-content">
       <a href="#" class="brand-logo" aria-label="Início KELDE.dev">
         <span id="nav-marca" class="brand-main">KELDE</span><span id="nav-sufixo" class="brand-suffix">.dev</span>
       </a>
 
       <nav class="nav-links" aria-label="Navegação Principal">
-        <a href="#blog">Blog & Artigos</a>
+        <a href="#blog">Blog</a>
         <a href="#roadmap">Evolução</a>
         <a href="#projetos">Vitrine & Lab</a>
-        <a href="#sobre">Sobre & Contato</a>
+        <a href="#sobre">Sobre</a>
       </nav>
 
       <div class="nav-actions">
+        <!-- Botão Command Palette (Ctrl + K) -->
+        <button id="btn-cmd-k" class="btn-cmd-trigger" type="button" title="Abrir Barra de Comandos Rápidos (Ctrl + K)">
+          <span>⌘ Comandos</span>
+          <kbd class="kbd-badge">Ctrl K</kbd>
+        </button>
+
+        <!-- Botão de Currículo Executivo em PDF -->
+        <button id="btn-cv-pdf" class="btn-nav-auth" type="button" title="Gerar Currículo Executivo em PDF">
+          <span>📄</span> <span class="hide-mobile">Currículo PDF</span>
+        </button>
+
+        <!-- Área Dinâmica do Usuário / Admin -->
+        <div id="area-usuario-nav"></div>
+
         <button id="btn-tema" class="theme-toggle" aria-label="Alternar entre tema claro e escuro" title="Alternar Tema Claro/Escuro">
           <span id="icone-tema">☀️</span>
         </button>
@@ -41,92 +75,100 @@
   </header>
 
   <main>
-    <!-- HERO SECTION: Neuromarketing & Autoridade Prospectiva -->
+    <!-- HERO SECTION -->
     <section class="hero container">
-      <div class="status-pill">
-        <span class="pulse-dot"></span>
-        <span id="hero-status">Carregando status...</span>
-      </div>
+      <div class="hero-grid">
+        <div class="hero-text-column">
+          <div class="status-pill no-print">
+            <span class="pulse-dot"></span>
+            <span id="hero-status">Carregando status...</span>
+          </div>
 
-      <p class="hero-identidade">
-        Olá, eu sou <strong id="hero-nome">Mikélder</strong> • <span id="hero-instituicao" class="mono-accent"></span>
-      </p>
+          <p class="hero-identidade">
+            Olá, eu sou <strong id="hero-nome">Mikélder</strong> • <span id="hero-instituicao" class="mono-accent"></span>
+          </p>
 
-      <h1 id="hero-headline" class="hero-title">
-        Carregando visão...
-      </h1>
+          <h1 id="hero-headline" class="hero-title">
+            Carregando visão...
+          </h1>
 
-      <p id="hero-subheadline" class="hero-subtitle"></p>
+          <p id="hero-subheadline" class="hero-subtitle"></p>
 
-      <div class="hero-cta-group">
-        <a href="#blog" class="btn btn-primary">Explorar Diário de Estudos ↓</a>
-        <a href="#sobre" class="btn btn-secondary">Conectar Comigo</a>
+          <div class="hero-cta-group no-print">
+            <a href="#blog" class="btn btn-primary">Explorar Diário de Estudos ↓</a>
+            <button id="btn-hero-login" class="btn btn-secondary" type="button">🔐 Área do Leitor / Login</button>
+          </div>
+        </div>
+
+        <!-- Coluna da Foto de Perfil -->
+        <div class="hero-photo-column no-print">
+          <div class="photo-glow-wrapper">
+            <img id="img-foto-perfil" src="" alt="Foto de Mikélder (KELDE)" class="profile-photo" />
+            <div id="fallback-avatar" class="profile-fallback" aria-hidden="true">MK</div>
+            <div class="photo-badge mono-accent">⚡ KELDE.dev v5.0</div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- SEÇÃO DO BLOG (Requisito 1-C e 4-C: Motor de Busca, Filtros e Tempo de Leitura) -->
+    <!-- SEÇÃO DO BLOG -->
     <section id="blog" class="section container">
       <div class="section-header">
         <div>
-          <span class="section-tag">LEARNING IN PUBLIC</span>
+          <span class="section-tag">LEARNING IN PUBLIC • INTERATIVO</span>
           <h2 class="section-title">Artigos & Notas de Engenharia</h2>
         </div>
-        <p class="section-desc">Documentando minha jornada acadêmica rumo à especialização, Mestrado e Doutorado.</p>
+        <p class="section-desc no-print">Faça login gratuito para salvar seus artigos favoritos (⭐) e participar dos comentários.</p>
       </div>
 
-      <!-- Controles do Motor do Blog: Busca em Tempo Real + Filtro de Categorias -->
-      <div class="blog-controls">
+      <div class="blog-controls no-print">
         <div class="search-wrapper">
           <span class="search-icon">🔍</span>
           <input 
             type="search" 
             id="input-busca" 
+            maxlength="80"
             placeholder="Buscar por tema (ex: Arquitetura, Dados, Scrum, IA...)" 
             aria-label="Buscar artigos"
           />
         </div>
-        <div id="filtros-categoria" class="category-pills" role="tablist">
-          <!-- Gerado automaticamente pelo app.js -->
-        </div>
+        <div id="filtros-categoria" class="category-pills" role="tablist"></div>
       </div>
 
-      <!-- Lista de Artigos -->
-      <div id="grid-artigos" class="articles-grid">
-        <!-- Gerado automaticamente pelo app.js -->
-      </div>
+      <div id="grid-artigos" class="articles-grid"></div>
     </section>
 
-    <!-- SEÇÃO DE EVOLUÇÃO / ROADMAP (Requisito 3-D: Viés de Progresso Dotado) -->
+    <!-- SEÇÃO DE TELEMETRIA ACADÊMICA & ROADMAP -->
     <section id="roadmap" class="section container">
       <div class="section-header">
         <div>
-          <span class="section-tag">TRAJETÓRIA CIENTÍFICA & TÉCNICA</span>
-          <h2 class="section-title">Matriz de Evolução</h2>
+          <span class="section-tag">TELEMETRIA ACADÊMICA & TRAJETÓRIA</span>
+          <h2 class="section-title">Matriz de Evolução & Métricas Reais</h2>
         </div>
-        <p class="section-desc">O mapa estratégico entre os fundamentos da graduação e a pesquisa científica avançada.</p>
+        <p class="section-desc">Indicadores transparentes de progresso universitário e horizonte de pesquisa científica.</p>
       </div>
 
-      <div id="grid-roadmap" class="roadmap-grid">
-        <!-- Gerado automaticamente pelo app.js -->
-      </div>
+      <!-- Novo: Painel de Telemetria Gamificada -->
+      <div id="grid-telemetria" class="telemetry-grid"></div>
+
+      <!-- Roadmap de Longo Prazo -->
+      <div id="grid-roadmap" class="roadmap-grid"></div>
     </section>
 
-    <!-- SEÇÃO DE PROJETOS / ESTUDOS DE CASO (Requisito 3-D) -->
+    <!-- SEÇÃO DE PROJETOS / ESTUDOS DE CASO -->
     <section id="projetos" class="section container">
       <div class="section-header">
         <div>
           <span class="section-tag">VITRINE & LABORATÓRIO</span>
           <h2 class="section-title">Estudos de Caso & Experimentos</h2>
         </div>
-        <p class="section-desc">Engenharia de software vai muito além da sintaxe: processos ágeis, infraestrutura e arquitetura.</p>
+        <p class="section-desc">Engenharia de software vai muito além da sintaxe: processos ágeis, banco de dados e arquitetura.</p>
       </div>
 
-      <div id="grid-projetos" class="projects-grid">
-        <!-- Gerado automaticamente pelo app.js -->
-      </div>
+      <div id="grid-projetos" class="projects-grid"></div>
     </section>
 
-    <!-- SEÇÃO SOBRE & CONTATO (Com Storytelling do Apelido KELDE) -->
+    <!-- SEÇÃO SOBRE & CONTATO -->
     <section id="sobre" class="section container">
       <div class="about-card">
         <div class="about-content">
@@ -139,27 +181,25 @@
           </div>
         </div>
 
-        <div class="contact-box">
+        <div class="contact-box no-print">
           <h3>Vamos conversar?</h3>
-          <p class="contact-sub">Aberto para conexões no LinkedIn, grupos de pesquisa, projetos acadêmicos e mentoria.</p>
+          <p class="contact-sub">Contatos protegidos com camuflagem anti-spam. Clique para interagir.</p>
           
-          <div id="lista-contatos" class="contact-links">
-            <!-- Gerado automaticamente pelo app.js -->
-          </div>
+          <div id="lista-contatos" class="contact-links"></div>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
+  <footer class="footer no-print">
     <div class="container footer-content">
-      <p>© <span id="ano-atual"></span> <strong>KELDE.dev</strong> — Desenvolvido com Arquitetura Modular para <strong>Mikélder</strong>.</p>
-      <p class="footer-tech">Arquitetura SoC • HTML5 Semântico • CSS Design Tokens • Vanilla JS</p>
+      <p>© <span id="ano-atual"></span> <strong>KELDE.dev v5.0 Ultimate</strong> — Arquitetura Modular para <strong>Mikélder</strong>.</p>
+      <p class="footer-tech">🛡️ Security by Design: RBAC Admin • Auth Hash • Command Palette (Ctrl+K) • CSP • Anti-XSS</p>
     </div>
   </footer>
 
-  <!-- MODAL DE LEITURA INSTANTÂNEA (SPA - Requisito 4-C) -->
-  <div id="modal-leitura" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true">
+  <!-- MODAL 1: LEITURA INSTANTÂNEA + COMENTÁRIOS -->
+  <div id="modal-leitura" class="modal-overlay no-print" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="modal-container">
       <div id="barra-progresso-modal" class="modal-progress-bar"></div>
       
@@ -177,10 +217,16 @@
         <div id="modal-tags" class="card-tags modal-tags-spacing"></div>
         <div id="modal-conteudo" class="article-prose"></div>
 
+        <section class="comments-section">
+          <h3 class="comments-title">💬 Discussão & Comentários da Comunidade</h3>
+          <div id="lista-comentarios-modal" class="comments-list"></div>
+          <div id="area-form-comentario" class="comment-form-wrapper"></div>
+        </section>
+
         <div class="modal-author-box">
           <div>
             <strong>Escrito por Mikélder (KELDE)</strong>
-            <p>Estudante de Engenharia de Software @ Unicesumar. Gostou dessa reflexão? Vamos debater esse tema lá no meu LinkedIn!</p>
+            <p>Estudante de Engenharia de Software @ Unicesumar. Vamos continuar esse debate também lá no LinkedIn!</p>
           </div>
           <a id="modal-link-linkedin" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">Comentar no LinkedIn ↗</a>
         </div>
@@ -188,7 +234,199 @@
     </div>
   </div>
 
-  <!-- Importação Modular: Primeiro os Dados, depois o Motor Lógico -->
+  <!-- MODAL 2: AUTENTICAÇÃO (LOGIN LEITOR / LOGIN ADMIN) -->
+  <div id="modal-auth" class="modal-overlay no-print" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-container auth-modal-box">
+      <header class="modal-header">
+        <div class="modal-meta">
+          <span class="badge-cat">🔐 KELDE_DB AUTH</span>
+          <span class="meta-text">Acesso de Leitores & Admin</span>
+        </div>
+        <button id="btn-fechar-auth" class="btn-close-modal" aria-label="Fechar janela de login">✕</button>
+      </header>
+
+      <div class="auth-body">
+        <div class="auth-tabs">
+          <button id="tab-login" class="auth-tab active" type="button">Entrar na Conta</button>
+          <button id="tab-cadastro" class="auth-tab" type="button">Criar Conta Gratuita</button>
+        </div>
+
+        <p id="auth-feedback" class="auth-feedback" aria-live="polite"></p>
+
+        <form id="form-login" class="auth-form">
+          <div class="form-group">
+            <label for="login-email">Seu E-mail (Use admin@kelde.dev para Admin)</label>
+            <input type="email" id="login-email" required maxlength="80" placeholder="exemplo@email.com" />
+          </div>
+          <div class="form-group">
+            <label for="login-senha">Sua Senha</label>
+            <input type="password" id="login-senha" required minlength="6" maxlength="60" placeholder="••••••" />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Acessar Sistema →</button>
+        </form>
+
+        <form id="form-cadastro" class="auth-form" style="display: none;">
+          <div class="form-group">
+            <label for="cad-nome">Como quer ser chamado?</label>
+            <input type="text" id="cad-nome" required maxlength="40" placeholder="Ex: Ana Silva" />
+          </div>
+          <div class="form-group">
+            <label for="cad-cargo">Sua Área ou Ocupação (Opcional)</label>
+            <input type="text" id="cad-cargo" maxlength="50" placeholder="Ex: Recrutador(a), Estudante, Dev..." />
+          </div>
+          <div class="form-group">
+            <label for="cad-email">Seu Melhor E-mail</label>
+            <input type="email" id="cad-email" required maxlength="80" placeholder="exemplo@email.com" />
+          </div>
+          <div class="form-group">
+            <label for="cad-senha">Crie uma Senha (mín. 6 caracteres)</label>
+            <input type="password" id="cad-senha" required minlength="6" maxlength="60" placeholder="••••••" />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Cadastrar no Banco de Dados →</button>
+        </form>
+
+        <div class="auth-security-note">
+          🛡️ <strong>Controle de Acesso (RBAC):</strong> Leitores têm acesso a favoritos e comentários. O Administrador (Mikélder) desbloqueia o <em>KELDE Studio CMS v5.0</em>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: PAINEL EXCLUSIVO DO ADMINISTRADOR (KELDE STUDIO CMS v5.0) -->
+  <div id="modal-admin" class="modal-overlay no-print" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-container admin-modal-box">
+      <header class="modal-header">
+        <div class="modal-meta">
+          <span class="badge-admin">👑 KELDE STUDIO CMS v5.0</span>
+          <span class="meta-text">Publicação, Neuromarketing LinkedIn & GitOps</span>
+        </div>
+        <button id="btn-fechar-admin" class="btn-close-modal" aria-label="Fechar Painel Admin">✕ Fechar</button>
+      </header>
+
+      <div class="modal-body">
+        <!-- Métricas do Banco de Dados em Tempo Real -->
+        <div id="admin-stats-grid" class="admin-stats"></div>
+
+        <!-- 3 Abas do Painel Admin v5.0 -->
+        <div class="auth-tabs auth-tabs-3" style="margin-bottom: 1.5rem;">
+          <button id="tab-admin-escrever" class="auth-tab active" type="button">✍️ 1. Escrever Artigo</button>
+          <button id="tab-admin-linkedin" class="auth-tab" type="button">🚀 2. Gerador LinkedIn</button>
+          <button id="tab-admin-gerenciar" class="auth-tab" type="button">📚 3. Banco & GitHub</button>
+        </div>
+
+        <p id="admin-feedback" class="auth-feedback" aria-live="polite"></p>
+
+        <!-- ABA 1: EDITOR VISUAL DE ARTIGOS -->
+        <form id="form-novo-artigo">
+          <div class="admin-form-grid">
+            <div class="form-group">
+              <label for="art-titulo">Título do Artigo</label>
+              <input type="text" id="art-titulo" required maxlength="120" placeholder="Ex: O que aprendi sobre Engenharia de Requisitos..." />
+            </div>
+            <div class="form-group">
+              <label for="art-categoria">Categoria</label>
+              <select id="art-categoria" class="admin-select">
+                <option value="Arquitetura">Arquitetura</option>
+                <option value="Dados">Dados</option>
+                <option value="DevOps & Automação">DevOps & Automação</option>
+                <option value="IA & Pesquisa">IA & Pesquisa</option>
+                <option value="Engenharia & Agilidade">Engenharia & Agilidade</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="art-tags">Tags (separadas por vírgula)</label>
+            <input type="text" id="art-tags" required maxlength="100" placeholder="Ex: Scrum, Unicesumar, Arquitetura, Estudos" />
+          </div>
+
+          <div class="form-group">
+            <label for="art-resumo">Resumo de Impacto (Aparece na capa do card)</label>
+            <input type="text" id="art-resumo" required maxlength="240" placeholder="Uma frase magnética resumindo a ideia central do seu artigo..." />
+          </div>
+
+          <div class="form-group">
+            <label for="art-conteudo">
+              Conteúdo Completo do Artigo 
+              <span class="mono-accent" style="font-size: 0.75rem; font-weight: 400;">
+                (Use "### Título" para subtítulos e "- item" para listas!)
+              </span>
+            </label>
+            <textarea id="art-conteudo" class="admin-textarea" required placeholder="Escreva seu artigo normalmente aqui.&#10;&#10;### Exemplo de Subtítulo&#10;Dê Enter para separar os parágrafos sem precisar saber HTML!&#10;&#10;- Tópico 1&#10;- Tópico 2"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">🚀 Publicar Artigo & Gerar Post para LinkedIn →</button>
+        </form>
+
+        <!-- ABA 2: GERADOR AUTOMÁTICO DE COPY MAGNÉTICA PARA LINKEDIN -->
+        <div id="painel-admin-linkedin" style="display: none;">
+          <div class="admin-form-grid">
+            <div class="form-group">
+              <label for="select-artigo-linkedin">Escolha o Artigo do seu Blog</label>
+              <select id="select-artigo-linkedin" class="admin-select"></select>
+            </div>
+            <div class="form-group">
+              <label for="estilo-copy-linkedin">Fórmula de Neuromarketing</label>
+              <select id="estilo-copy-linkedin" class="admin-select">
+                <option value="storytelling">🧠 Storytelling Acadêmico (Alta Conexão)</option>
+                <option value="aida">⚡ Provocação Técnica - Método AIDA (Viral)</option>
+                <option value="executivo">🎯 Síntese Executiva (Foco em Recrutadores)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="textarea-copy-linkedin">Post Pronto para o seu LinkedIn (Você pode editar se quiser)</label>
+            <textarea id="textarea-copy-linkedin" class="admin-textarea" style="min-height: 230px;"></textarea>
+          </div>
+
+          <button id="btn-copiar-linkedin" type="button" class="btn btn-primary" style="width: 100%;">📋 Copiar Post Magnético para a Área de Transferência</button>
+        </div>
+
+        <!-- ABA 3: GERENCIADOR DE ARTIGOS, BANCO DE USUÁRIOS E EXPORTAÇÃO GITOPS -->
+        <div id="painel-admin-gerenciar" style="display: none;">
+          <div class="gitops-box">
+            <div>
+              <strong>🌐 Sincronizador GitHub Pages (GitOps)</strong>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                Para deixar os artigos criados aqui permanentes para visitantes do mundo inteiro no GitHub, baixe o arquivo <code>dados.js</code> atualizado abaixo e suba no seu repositório!
+              </p>
+            </div>
+            <button id="btn-exportar-dados" type="button" class="btn btn-primary btn-sm">📥 Baixar dados.js Atualizado</button>
+          </div>
+
+          <h4 style="margin: 1.5rem 0 0.75rem;">📚 Artigos Publicados no Sistema</h4>
+          <div id="lista-admin-artigos" class="admin-list"></div>
+
+          <h4 style="margin: 1.5rem 0 0.75rem;">👥 Leitores Cadastrados no Banco (Com Senhas em Hash)</h4>
+          <div id="lista-admin-usuarios" class="admin-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: COMMAND PALETTE (CTRL + K / ESTILO VALE DO SILÍCIO) -->
+  <div id="modal-cmd" class="modal-overlay no-print" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-container cmd-modal-box">
+      <div class="cmd-search-header">
+        <span class="mono-accent">⌘</span>
+        <input 
+          type="text" 
+          id="input-cmd" 
+          placeholder="Digite um comando ou busque um artigo (use ↑ ↓ e Enter)..." 
+          autocomplete="off"
+        />
+        <button id="btn-fechar-cmd" class="kbd-badge" style="cursor: pointer; border: none;">ESC</button>
+      </div>
+      <div id="lista-cmd" class="cmd-list" role="listbox"></div>
+      <div class="cmd-footer">
+        <span><strong>↑↓</strong> para navegar</span>
+        <span><strong>Enter</strong> para executar</span>
+        <span><strong>ESC</strong> para sair</span>
+      </div>
+    </div>
+  </div>
+
   <script src="dados.js"></script>
   <script src="app.js"></script>
 </body>

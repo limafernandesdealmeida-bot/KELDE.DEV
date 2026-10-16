@@ -8,7 +8,7 @@ const DADOS_PERFIL = {
   nomeCompleto: "Mikélder",
   iniciais: "MK",
   fotoPerfil: "foto.jpg",
-  urlPublica: "https://limafernandesdealmeida-bot.github.io/KELDE.DEV/",
+  urlPublica: "urlPublica: "https://keldedev.vercel.app",",
 
   instituicao: "Engenharia de Software @ Unicesumar",
   statusAtual: "Disponível para Networking, Pesquisa & Projetos",

@@ -9,16 +9,17 @@
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
 
-  <!-- OPEN GRAPH META TAGS (Preview Profissional no LinkedIn e WhatsApp) -->
+  <!-- OPEN GRAPH META TAGS -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="KELDE.dev — Mikélder" />
   <meta property="og:title" content="KELDE.dev — Mikélder | Engenharia de Software, Arquitetura, IA & DevOps" />
   <meta property="og:description" content="Portfólio Acadêmico e Laboratório Público de Estudos em Engenharia de Software, Arquitetura de Sistemas, Dados, IA e Automação." />
-  <meta property="og:url" content="https://limafernandesdealmeida-bot.github.io/KELDE.DEV/" />
+  <meta property="og:url" content="https://keldedev.vercel.app" />
 
   <title>KELDE.dev — Mikélder | Engenharia de Software & Blog Científico</title>
-  <meta name="description" content="Portfólio e Laboratório de Estudos de Mikélder (KELDE). Engenharia de Software, Arquitetura, IA, Dados e DevOps." />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230b0f19%22/><text x=%2250%22 y=%2265%22 font-family=%22monospace%22 font-size=%2250%22 font-weight=%22bold%22 fill=%22%2338bdf8%22 text-anchor=%22middle%22>MK</text></svg>" />
+  <meta name="description" content="Portfólio e Laboratório de Estudos de Mikélder (KELDE). Engenharia de Software, Arquitetura, IA, Dados e DevOps." />
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -30,7 +31,7 @@
   <!-- Barra de Progresso de Leitura Global -->
   <div id="barra-progresso-topo" class="progress-bar-top no-print"></div>
 
-  <!-- CABEÇALHO EXCLUSIVO PARA IMPRESSÃO DO CURRÍCULO EM PDF (Oculto na tela normal) -->
+  <!-- CABEÇALHO EXCLUSIVO PARA IMPRESSÃO DO CURRÍCULO EM PDF -->
   <section id="print-cv-header" class="print-only-header">
     <h1 id="print-nome">Mikélder (KELDE.dev)</h1>
     <p id="print-instituicao" style="font-weight: 700; margin-bottom: 0.4rem;"></p>
@@ -46,6 +47,7 @@
       </a>
 
       <nav class="nav-links" aria-label="Navegação Principal">
+        <a href="#paginas">Páginas & Cursos</a>
         <a href="#blog">Blog</a>
         <a href="#roadmap">Evolução</a>
         <a href="#projetos">Vitrine & Lab</a>
@@ -53,18 +55,15 @@
       </nav>
 
       <div class="nav-actions">
-        <!-- Botão Command Palette (Ctrl + K) -->
         <button id="btn-cmd-k" class="btn-cmd-trigger" type="button" title="Abrir Barra de Comandos Rápidos (Ctrl + K)">
           <span>⌘ Comandos</span>
           <kbd class="kbd-badge">Ctrl K</kbd>
         </button>
 
-        <!-- Botão de Currículo Executivo em PDF -->
         <button id="btn-cv-pdf" class="btn-nav-auth" type="button" title="Gerar Currículo Executivo em PDF">
           <span>📄</span> <span class="hide-mobile">Currículo PDF</span>
         </button>
 
-        <!-- Área Dinâmica do Usuário / Admin -->
         <div id="area-usuario-nav"></div>
 
         <button id="btn-tema" class="theme-toggle" aria-label="Alternar entre tema claro e escuro" title="Alternar Tema Claro/Escuro">
@@ -95,7 +94,7 @@
           <p id="hero-subheadline" class="hero-subtitle"></p>
 
           <div class="hero-cta-group no-print">
-            <a href="#blog" class="btn btn-primary">Explorar Diário de Estudos ↓</a>
+            <a href="#paginas" class="btn btn-primary">Explorar Páginas & Blog ↓</a>
             <button id="btn-hero-login" class="btn btn-secondary" type="button">🔐 Área do Leitor / Login</button>
           </div>
         </div>
@@ -105,10 +104,31 @@
           <div class="photo-glow-wrapper">
             <img id="img-foto-perfil" src="" alt="Foto de Mikélder (KELDE)" class="profile-photo" />
             <div id="fallback-avatar" class="profile-fallback" aria-hidden="true">MK</div>
-            <div class="photo-badge mono-accent">⚡ KELDE.dev v5.0</div>
+            <div class="photo-badge mono-accent">⚡ KELDE.dev v6.0</div>
           </div>
         </div>
       </div>
+
+      <!-- NOVO: BARRA DE CANAIS RÁPIDOS ESTILO DISCORD (1-C) -->
+      <div class="discord-channels-wrapper no-print">
+        <span class="channels-label mono-accent">CANAIS #</span>
+        <div id="barra-canais-discord" class="discord-channels-bar" role="navigation" aria-label="Canais e Páginas Rápidas">
+          <!-- Preenchido dinamicamente pelo app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- NOVA SEÇÃO: PÁGINAS INTERATIVAS & CURSOS (1-C & 2-A) -->
+    <section id="paginas" class="section container">
+      <div class="section-header">
+        <div>
+          <span class="section-tag">CANAIS & PÁGINAS INTERATIVAS (#)</span>
+          <h2 class="section-title">Páginas Especiais & Trilha de Cursos</h2>
+        </div>
+        <p class="section-desc no-print">Clique em qualquer página para ver certificados, trilhas e deixar recomendações nos comentários!</p>
+      </div>
+
+      <div id="grid-paginas" class="pages-grid"></div>
     </section>
 
     <!-- SEÇÃO DO BLOG -->
@@ -118,7 +138,7 @@
           <span class="section-tag">LEARNING IN PUBLIC • INTERATIVO</span>
           <h2 class="section-title">Artigos & Notas de Engenharia</h2>
         </div>
-        <p class="section-desc no-print">Faça login gratuito para salvar seus artigos favoritos (⭐) e participar dos comentários.</p>
+        <p class="section-desc no-print">Use # nos comentários para mencionar páginas (ex: #cursos) ou artigos (ex: #arquitetura)!</p>
       </div>
 
       <div class="blog-controls no-print">
@@ -148,10 +168,7 @@
         <p class="section-desc">Indicadores transparentes de progresso universitário e horizonte de pesquisa científica.</p>
       </div>
 
-      <!-- Novo: Painel de Telemetria Gamificada -->
       <div id="grid-telemetria" class="telemetry-grid"></div>
-
-      <!-- Roadmap de Longo Prazo -->
       <div id="grid-roadmap" class="roadmap-grid"></div>
     </section>
 
@@ -193,12 +210,12 @@
 
   <footer class="footer no-print">
     <div class="container footer-content">
-      <p>© <span id="ano-atual"></span> <strong>KELDE.dev v5.0 Ultimate</strong> — Arquitetura Modular para <strong>Mikélder</strong>.</p>
-      <p class="footer-tech">🛡️ Security by Design: RBAC Admin • Auth Hash • Command Palette (Ctrl+K) • CSP • Anti-XSS</p>
+      <p>© <span id="ano-atual"></span> <strong>KELDE.dev v6.0 Ultimate</strong> — Arquitetura Modular para <strong>Mikélder</strong>.</p>
+      <p class="footer-tech">🛡️ Security by Design: Páginas CRUD • Discord Mentions (#) • RBAC Admin • Auth Hash • CSP</p>
     </div>
   </footer>
 
-  <!-- MODAL 1: LEITURA INSTANTÂNEA + COMENTÁRIOS -->
+  <!-- MODAL 1: LEITURA DE ARTIGOS & PÁGINAS INTERATIVAS + COMENTÁRIOS -->
   <div id="modal-leitura" class="modal-overlay no-print" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="modal-container">
       <div id="barra-progresso-modal" class="modal-progress-bar"></div>
@@ -206,29 +223,34 @@
       <header class="modal-header">
         <div class="modal-meta">
           <span id="modal-categoria" class="badge-cat">Categoria</span>
+          <span id="modal-slug-badge" class="discord-mention-static">#canal</span>
           <span id="modal-data" class="meta-text">Data</span>
-          <span id="modal-tempo" class="meta-text mono-accent">⏱ 3 min de leitura</span>
+          <span id="modal-tempo" class="meta-text mono-accent">⏱ 3 min</span>
         </div>
-        <button id="btn-fechar-modal" class="btn-close-modal" aria-label="Fechar leitura">✕ Fechar (ESC)</button>
+        <div style="display: flex; gap: 0.4rem; align-items: center;">
+          <button id="btn-editar-direto-modal" class="btn-admin-cms" type="button" style="display: none;">✏️ Editar no Studio</button>
+          <button id="btn-fechar-modal" class="btn-close-modal" aria-label="Fechar leitura">✕ Fechar</button>
+        </div>
       </header>
 
       <article class="modal-body" id="modal-scroll-area">
-        <h1 id="modal-titulo" class="modal-article-title">Título do Artigo</h1>
+        <h1 id="modal-titulo" class="modal-article-title">Título</h1>
         <div id="modal-tags" class="card-tags modal-tags-spacing"></div>
         <div id="modal-conteudo" class="article-prose"></div>
 
         <section class="comments-section">
-          <h3 class="comments-title">💬 Discussão & Comentários da Comunidade</h3>
+          <h3 id="titulo-secao-comentarios" class="comments-title">💬 Discussão, Recomendações & Comentários</h3>
+          <p class="comments-hint">💡 Dica: Você pode mencionar páginas ou artigos no seu comentário usando <code>#</code> (ex: <code>#cursos</code>, <code>#arquitetura</code>).</p>
           <div id="lista-comentarios-modal" class="comments-list"></div>
           <div id="area-form-comentario" class="comment-form-wrapper"></div>
         </section>
 
         <div class="modal-author-box">
           <div>
-            <strong>Escrito por Mikélder (KELDE)</strong>
+            <strong>Espaço Oficial de Mikélder (KELDE)</strong>
             <p>Estudante de Engenharia de Software @ Unicesumar. Vamos continuar esse debate também lá no LinkedIn!</p>
           </div>
-          <a id="modal-link-linkedin" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">Comentar no LinkedIn ↗</a>
+          <a id="modal-link-linkedin" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">Conectar no LinkedIn ↗</a>
         </div>
       </article>
     </div>
@@ -286,42 +308,95 @@
         </form>
 
         <div class="auth-security-note">
-          🛡️ <strong>Controle de Acesso (RBAC):</strong> Leitores têm acesso a favoritos e comentários. O Administrador (Mikélder) desbloqueia o <em>KELDE Studio CMS v5.0</em>.
+          🛡️ <strong>Controle de Acesso (RBAC):</strong> Leitores podem favoritar e comentar nas páginas e artigos. O Administrador (Mikélder) gerencia páginas, certificados e artigos no <em>KELDE Studio CMS v6.0</em>.
         </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL 3: PAINEL EXCLUSIVO DO ADMINISTRADOR (KELDE STUDIO CMS v5.0) -->
+  <!-- MODAL 3: PAINEL EXCLUSIVO DO ADMINISTRADOR (KELDE STUDIO CMS v6.0) -->
   <div id="modal-admin" class="modal-overlay no-print" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="modal-container admin-modal-box">
       <header class="modal-header">
         <div class="modal-meta">
-          <span class="badge-admin">👑 KELDE STUDIO CMS v5.0</span>
-          <span class="meta-text">Publicação, Neuromarketing LinkedIn & GitOps</span>
+          <span class="badge-admin">👑 KELDE STUDIO CMS v6.0</span>
+          <span class="meta-text">Páginas, Certificados, Artigos & Menções #</span>
         </div>
         <button id="btn-fechar-admin" class="btn-close-modal" aria-label="Fechar Painel Admin">✕ Fechar</button>
       </header>
 
       <div class="modal-body">
-        <!-- Métricas do Banco de Dados em Tempo Real -->
         <div id="admin-stats-grid" class="admin-stats"></div>
 
-        <!-- 3 Abas do Painel Admin v5.0 -->
-        <div class="auth-tabs auth-tabs-3" style="margin-bottom: 1.5rem;">
-          <button id="tab-admin-escrever" class="auth-tab active" type="button">✍️ 1. Escrever Artigo</button>
-          <button id="tab-admin-linkedin" class="auth-tab" type="button">🚀 2. Gerador LinkedIn</button>
-          <button id="tab-admin-gerenciar" class="auth-tab" type="button">📚 3. Banco & GitHub</button>
+        <!-- 4 Abas do Painel Admin v6.0 -->
+        <div class="auth-tabs auth-tabs-4" style="margin-bottom: 1.25rem;">
+          <button id="tab-admin-paginas" class="auth-tab active" type="button">📄 1. Páginas & Cursos</button>
+          <button id="tab-admin-escrever" class="auth-tab" type="button">✍️ 2. Artigos do Blog</button>
+          <button id="tab-admin-linkedin" class="auth-tab" type="button">🚀 3. Gerador LinkedIn</button>
+          <button id="tab-admin-gerenciar" class="auth-tab" type="button">📚 4. Banco & GitHub</button>
         </div>
 
         <p id="admin-feedback" class="auth-feedback" aria-live="polite"></p>
 
-        <!-- ABA 1: EDITOR VISUAL DE ARTIGOS -->
-        <form id="form-novo-artigo">
-          <div class="admin-form-grid">
+        <!-- ABA 1: CRIAR / EDITAR PÁGINAS & CERTIFICADOS -->
+        <form id="form-nova-pagina">
+          <input type="hidden" id="pag-id-edicao" value="" />
+          
+          <div class="admin-form-grid-3">
+            <div class="form-group">
+              <label for="pag-titulo">Título da Página</label>
+              <input type="text" id="pag-titulo" required maxlength="90" placeholder="Ex: Cursos, Certificados & Trilha" />
+            </div>
+            <div class="form-group">
+              <label for="pag-slug">Atalho Discord (#slug)</label>
+              <input type="text" id="pag-slug" required maxlength="30" placeholder="Ex: cursos (vira #cursos)" />
+            </div>
+            <div class="form-group">
+              <label for="pag-icone">Ícone (Emoji)</label>
+              <input type="text" id="pag-icone" required maxlength="4" value="🎓" placeholder="🎓" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="pag-resumo">Resumo da Página (Aparece no card da página)</label>
+            <input type="text" id="pag-resumo" required maxlength="220" placeholder="Ex: Veja os cursos que já fiz, os que estou fazendo e deixe recomendações nos comentários!" />
+          </div>
+
+          <!-- Barra de Super-Atalhos para Cursos, Certificados e Menções # -->
+          <div class="helper-toolbar">
+            <span class="mono-accent" style="font-size: 0.75rem;">⚡ Inserir Rápido:</span>
+            <button type="button" class="chip-insert-pag" data-insert="&#10;[FEITO] Nome do Curso | Instituição | https://link-do-certificado">+ ✅ Curso Feito (Com Certificado)</button>
+            <button type="button" class="chip-insert-pag" data-insert="&#10;[FAZENDO] Nome do Curso | Instituição">+ ⏳ Curso Fazendo</button>
+            <button type="button" class="chip-insert-pag" data-insert="&#10;[FUTURO] Nome do Curso | Área de Estudo">+ 🎯 Curso Futuro</button>
+            <button type="button" class="chip-insert-pag" data-insert="&#10;### Título da Seção">+ Subtítulo (###)</button>
+          </div>
+
+          <div id="helper-mencoes-pag" class="helper-toolbar" style="margin-top: 0.4rem;"></div>
+
+          <div class="form-group">
+            <label for="pag-conteudo">Conteúdo da Página (Suporta textos, [FEITO], [FAZENDO], [FUTURO] e #menções!)</label>
+            <textarea id="pag-conteudo" class="admin-textarea" required placeholder="Escreva o conteúdo da página ou use os botões acima para adicionar cursos e certificados!"></textarea>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button type="submit" id="btn-salvar-pagina" class="btn btn-primary" style="flex: 1;">💾 Salvar Página no Sistema</button>
+            <button type="button" id="btn-cancelar-edicao-pag" class="btn btn-secondary" style="display: none;">Cancelar Edição</button>
+          </div>
+
+          <h4 style="margin: 1.5rem 0 0.65rem;">📄 Suas Páginas Ativas (Clique em Editar para atualizar seus cursos quando quiser!)</h4>
+          <div id="lista-admin-paginas-rapida" class="admin-list"></div>
+        </form>
+
+        <!-- ABA 2: EDITOR DE ARTIGOS DO BLOG -->
+        <form id="form-novo-artigo" style="display: none;">
+          <div class="admin-form-grid-3">
             <div class="form-group">
               <label for="art-titulo">Título do Artigo</label>
               <input type="text" id="art-titulo" required maxlength="120" placeholder="Ex: O que aprendi sobre Engenharia de Requisitos..." />
+            </div>
+            <div class="form-group">
+              <label for="art-slug">Atalho Discord (#slug)</label>
+              <input type="text" id="art-slug" required maxlength="30" placeholder="Ex: requisitos" />
             </div>
             <div class="form-group">
               <label for="art-categoria">Categoria</label>
@@ -345,20 +420,22 @@
             <input type="text" id="art-resumo" required maxlength="240" placeholder="Uma frase magnética resumindo a ideia central do seu artigo..." />
           </div>
 
+          <div id="helper-mencoes-art" class="helper-toolbar"></div>
+
           <div class="form-group">
             <label for="art-conteudo">
               Conteúdo Completo do Artigo 
               <span class="mono-accent" style="font-size: 0.75rem; font-weight: 400;">
-                (Use "### Título" para subtítulos e "- item" para listas!)
+                (Use "### Título", "- item" e mencione páginas como #cursos!)
               </span>
             </label>
-            <textarea id="art-conteudo" class="admin-textarea" required placeholder="Escreva seu artigo normalmente aqui.&#10;&#10;### Exemplo de Subtítulo&#10;Dê Enter para separar os parágrafos sem precisar saber HTML!&#10;&#10;- Tópico 1&#10;- Tópico 2"></textarea>
+            <textarea id="art-conteudo" class="admin-textarea" required placeholder="Escreva seu artigo aqui. Você pode citar #cursos ou outros artigos!"></textarea>
           </div>
 
           <button type="submit" class="btn btn-primary" style="width: 100%;">🚀 Publicar Artigo & Gerar Post para LinkedIn →</button>
         </form>
 
-        <!-- ABA 2: GERADOR AUTOMÁTICO DE COPY MAGNÉTICA PARA LINKEDIN -->
+        <!-- ABA 3: GERADOR AUTOMÁTICO DE COPY MAGNÉTICA PARA LINKEDIN -->
         <div id="painel-admin-linkedin" style="display: none;">
           <div class="admin-form-grid">
             <div class="form-group">
@@ -376,20 +453,20 @@
           </div>
 
           <div class="form-group">
-            <label for="textarea-copy-linkedin">Post Pronto para o seu LinkedIn (Você pode editar se quiser)</label>
+            <label for="textarea-copy-linkedin">Post Pronto para o seu LinkedIn</label>
             <textarea id="textarea-copy-linkedin" class="admin-textarea" style="min-height: 230px;"></textarea>
           </div>
 
           <button id="btn-copiar-linkedin" type="button" class="btn btn-primary" style="width: 100%;">📋 Copiar Post Magnético para a Área de Transferência</button>
         </div>
 
-        <!-- ABA 3: GERENCIADOR DE ARTIGOS, BANCO DE USUÁRIOS E EXPORTAÇÃO GITOPS -->
+        <!-- ABA 4: GERENCIADOR DE BANCO E EXPORTAÇÃO GITOPS -->
         <div id="painel-admin-gerenciar" style="display: none;">
           <div class="gitops-box">
             <div>
-              <strong>🌐 Sincronizador GitHub Pages (GitOps)</strong>
+              <strong>🌐 Sincronizador GitHub & Vercel (GitOps v6.0)</strong>
               <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                Para deixar os artigos criados aqui permanentes para visitantes do mundo inteiro no GitHub, baixe o arquivo <code>dados.js</code> atualizado abaixo e suba no seu repositório!
+                Sempre que criar ou editar suas <strong>Páginas (#cursos)</strong> ou <strong>Artigos</strong> aqui no navegador, clique no botão ao lado para baixar o <code>dados.js</code> atualizado e suba no seu GitHub para atualizar na Vercel!
               </p>
             </div>
             <button id="btn-exportar-dados" type="button" class="btn btn-primary btn-sm">📥 Baixar dados.js Atualizado</button>
@@ -405,7 +482,7 @@
     </div>
   </div>
 
-  <!-- MODAL 4: COMMAND PALETTE (CTRL + K / ESTILO VALE DO SILÍCIO) -->
+  <!-- MODAL 4: COMMAND PALETTE (CTRL + K) -->
   <div id="modal-cmd" class="modal-overlay no-print" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="modal-container cmd-modal-box">
       <div class="cmd-search-header">
@@ -413,7 +490,7 @@
         <input 
           type="text" 
           id="input-cmd" 
-          placeholder="Digite um comando ou busque um artigo (use ↑ ↓ e Enter)..." 
+          placeholder="Digite um comando, #pagina ou artigo (use ↑ ↓ e Enter)..." 
           autocomplete="off"
         />
         <button id="btn-fechar-cmd" class="kbd-badge" style="cursor: pointer; border: none;">ESC</button>

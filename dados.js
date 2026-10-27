@@ -1,5 +1,5 @@
 // ============================================================================
-// ARQUIVO DE DADOS (CMS LOCAL v5.0 ULTIMATE) - KELDE.DEV (Mikélder)
+// ARQUIVO DE DADOS (CMS LOCAL v6.0 - PÁGINAS & MENÇÕES DISCORD) - KELDE.DEV
 // ============================================================================
 
 const DADOS_PERFIL = {
@@ -8,14 +8,14 @@ const DADOS_PERFIL = {
   nomeCompleto: "Mikélder",
   iniciais: "MK",
   fotoPerfil: "IMG_20260803_115450.jpg",
-  urlPublica: "urlPublica: https://keldedev.vercel.app",
+  urlPublica: "https://keldedev.vercel.app",
 
   instituicao: "Engenharia de Software @ Unicesumar",
   statusAtual: "Disponível para Networking, Pesquisa & Projetos",
   
   headline: "Documentando a ciência por trás do software: da Engenharia de Requisitos à Arquitetura, Dados, IA e Automação.",
   
-  subheadline: "Construindo uma base sólida na graduação com visão de longo prazo voltada à pesquisa científica (Mestrado & Doutorado). Pressione Ctrl + K para navegar por comandos rápidos!",
+  subheadline: "Construindo uma base sólida na graduação com visão de longo prazo voltada à pesquisa científica (Mestrado & Doutorado). Navegue pelos canais # abaixo ou pressione Ctrl + K!",
 
   sobreMim: "Meus tios me chamam de 'Kelde' porque achavam difícil pronunciar Mikélder — e decidi transformar esse apelido familiar na identidade do meu laboratório digital. Sou estudante de Engenharia de Software na Unicesumar e acredito no conceito de Learning in Public (aprender em público). Mesmo enquanto construo minha base em programação, meu foco é enxergar a computação de forma sistêmica: como arquitetar sistemas resilientes, extrair inteligência de dados, aplicar metodologias ágeis e automatizar infraestruturas.",
 
@@ -29,7 +29,39 @@ const DADOS_PERFIL = {
 };
 
 // ============================================================================
-// TELEMETRIA ACADÊMICA GAMIFICADA (Métricas Reais de Disciplina & Progresso)
+// PÁGINAS INTERATIVAS & CANAIS (Estilo Discord: mencione usando #cursos)
+// Você pode Criar, Editar ou Excluir páginas direto pelo Painel Admin!
+// ============================================================================
+const DADOS_PAGINAS = [
+  {
+    id: 201,
+    slug: "cursos",
+    icone: "🎓",
+    titulo: "Cursos, Certificados & Trilha de Estudos",
+    atualizadoEm: "Out 2026",
+    resumo: "Acompanhe os cursos que já concluí (com certificados), os que estou fazendo agora e os próximos da minha lista. Tem alguma recomendação de curso? Deixe nos comentários desta página!",
+    conteudoBruto: `Bem-vindo à minha central de formação contínua! Como estudante de Engenharia de Software, organizo aqui minha trilha complementar de cursos e certificações.
+
+💡 Estou mapeando e organizando meus certificados atuais e próximos cursos. Se você conhece uma plataforma, livro ou formação excelente para os temas abaixo, deixe uma recomendação nos comentários no final desta página!
+
+### ✅ Cursos & Certificados Concluídos
+[FEITO] Em atualização (Organizando certificados concluídos) | Unicesumar & Estudos Livres | #
+
+### ⏳ Cursos em Andamento
+[FAZENDO] Graduação em Engenharia de Software | Unicesumar
+[FAZENDO] Em atualização (Levantando cursos atuais) | Plataforma em definição
+
+### 🎯 Próximos Cursos (Aceito Recomendações nos Comentários!)
+[FUTURO] Arquitetura de Sistemas & Design Patterns | Engenharia de Software
+[FUTURO] Banco de Dados, Engenharia de Dados & IA | Dados & IA
+[FUTURO] Cultura DevOps, Docker & Automação CI/CD | Infraestrutura
+
+Você também pode conferir como aplico esses conceitos nos meus artigos sobre #arquitetura, #dados e #devops!`
+  }
+];
+
+// ============================================================================
+// TELEMETRIA ACADÊMICA GAMIFICADA
 // ============================================================================
 const DADOS_TELEMETRIA = [
   {
@@ -110,20 +142,21 @@ const DADOS_PROJETOS = [
   {
     id: 3,
     tipo: "Arquitetura Full-Feature",
-    titulo: "Plataforma KELDE.dev v5.0 Ultimate",
-    resumo: "Aplicação web modular com Command Palette (Ctrl+K), CMS Admin com RBAC, gerador automático de copy para LinkedIn, currículo em PDF e proteção Anti-XSS.",
-    aprendizados: "Padrão Separation of Concerns (SoC), persistência NoSQL local, criptografia de senhas por Hash+Salt e Neurodesign.",
-    metricas: "v5.0 • Command Palette + CMS + DevSecOps",
+    titulo: "Plataforma KELDE.dev v6.0 (Páginas Dinâmicas & Menções #)",
+    resumo: "Aplicação web modular com sistema de páginas CRUD, cartões de certificados, menções interativas estilo Discord (#), Command Palette (Ctrl+K) e CMS Admin.",
+    aprendizados: "Padrão Separation of Concerns (SoC), persistência NoSQL local, parser de hipertexto para menções cruzadas e Neurodesign.",
+    metricas: "v6.0 • Páginas + Discord Mentions + CMS",
     tags: ["Arquitetura", "Cibersegurança", "CMS", "Neuromarketing"]
   }
 ];
 
 // ============================================================================
-// MOTOR DO BLOG: SEUS ARTIGOS
+// MOTOR DO BLOG: SEUS ARTIGOS (Mencione usando #arquitetura, #dados, #devops)
 // ============================================================================
 const DADOS_ARTIGOS = [
   {
     id: 101,
+    slug: "arquitetura",
     titulo: "Por que a Arquitetura de Software vem antes da primeira linha de código?",
     data: "15 Out 2026",
     categoria: "Arquitetura",
@@ -131,7 +164,7 @@ const DADOS_ARTIGOS = [
     resumo: "Muitos iniciantes acham que desenvolver software é apenas digitar comandos. Na Engenharia de Software, aprendemos que o segredo de um sistema duradouro está na planta, não apenas nos tijolos.",
     tags: ["Arquitetura", "Engenharia de Software", "Boas Práticas"],
     conteudo: `
-      <p>Quando começamos a estudar tecnologia, a ansiedade natural é querer sair digitando código imediatamente. Mas, à medida que me aprofundo na graduação em <strong>Engenharia de Software</strong>, percebo uma verdade fundamental: <em>programar é apenas uma etapa da construção; arquitetar é o que garante que o sistema continue de pé amanhã.</em></p>
+      <p>Quando começamos a estudar tecnologia, a ansiedade natural é querer sair digitando código imediatamente. Mas, à medida que me aprofundo na graduação em <strong>Engenharia de Software</strong> (veja minha trilha em #cursos), percebo uma verdade fundamental: <em>programar é apenas uma etapa da construção; arquitetar é o que garante que o sistema continue de pé amanhã.</em></p>
       
       <h3>O que é, de fato, Arquitetura de Software?</h3>
       <p>Pense na construção de um edifício. Você pode ter os melhores pedreiros do mundo, mas se não houver um cálculo estrutural e uma planta clara dividindo a rede elétrica da rede hidráulica, qualquer reforma futura vai derrubar uma parede essencial.</p>
@@ -143,11 +176,12 @@ const DADOS_ARTIGOS = [
       </ul>
 
       <h3>A visão de um futuro pesquisador</h3>
-      <p>Estudar arquitetura antes mesmo de dominar todas as linguagens de programação me dá uma vantagem estratégica: quando eu olhar para um problema real ou iniciar uma pesquisa de mestrado, minha primeira pergunta nunca será <em>"qual ferramenta está na moda?"</em>, mas sim <strong>"qual estrutura resolve esse problema com menor custo de manutenção e maior escalabilidade?"</strong>.</p>
+      <p>Estudar arquitetura antes mesmo de dominar todas as linguagens de programação me dá uma vantagem estratégica, conectando-se diretamente com meus estudos sobre #dados e #devops.</p>
     `
   },
   {
     id: 102,
+    slug: "dados",
     titulo: "Dados e IA: O novo petróleo não serve para nada sem uma refinaria",
     data: "12 Out 2026",
     categoria: "Dados",
@@ -159,19 +193,19 @@ const DADOS_ARTIGOS = [
 
       <h3>Da coleta bruta à inteligência real</h3>
       <p>Um modelo de Inteligência Artificial ou um painel de decisões empresariais só é tão bom quanto a qualidade dos dados que entram nele. Na ciência da computação, existe um princípio clássico chamado <em>Garbage In, Garbage Out</em> (Lixo entra, Lixo sai).</p>
-      <p>Por isso, meu interesse na área de <strong>Dados e IA</strong> passa por entender três pilares fundamentais:</p>
       <ul>
         <li><strong>Modelagem e Bancos de Dados:</strong> Como estruturar usuários, permissões e registros para que façam sentido lógico e seguro.</li>
         <li><strong>Metodologia Científica:</strong> Testar hipóteses com base em evidências, evitando vieses cognitivos na interpretação de métricas.</li>
-        <li><strong>Eficiência Computacional:</strong> Como processar informações e rodar modelos (inclusive localmente) consumindo o mínimo de recursos de hardware.</li>
+        <li><strong>Eficiência Computacional:</strong> Como processar informações e rodar modelos consumindo o mínimo de recursos de hardware.</li>
       </ul>
 
       <h3>O próximo passo</h3>
-      <p>Unir a visão rigorosa da Engenharia de Software com a capacidade analítica de Dados é um dos caminhos mais promissores tanto para o mercado quanto para a pesquisa acadêmica avançada.</p>
+      <p>Unir a visão rigorosa de #arquitetura com a capacidade analítica de Dados é um dos focos da minha lista de próximos estudos na página #cursos!</p>
     `
   },
   {
     id: 103,
+    slug: "devops",
     titulo: "Cultura DevOps e Automação: Se você faz algo repetitivo três vezes, automatize",
     data: "08 Out 2026",
     categoria: "DevOps & Automação",
@@ -182,25 +216,31 @@ const DADOS_ARTIGOS = [
       <p>Ao estudar metodologias ágeis como <strong>Scrum</strong> e <strong>Extreme Programming (XP)</strong>, uma pergunta sempre surge: <em>de que adianta planejar entregas rápidas se, na hora de colocar o sistema no ar, tudo quebra ou demora dias?</em> É exatamente aí que entra a cultura <strong>DevOps e Automação</strong>.</p>
 
       <h3>A ponte entre Desenvolvimento (Dev), Segurança (Sec) e Operações (Ops)</h3>
-      <p>Antigamente, quem criava o programa jogava o pacote "por cima do muro" para a equipe de infraestrutura cuidar. Se desse erro, começava o jogo de empurra. A filosofia DevOps derruba esse muro.</p>
       <ul>
-        <li><strong>Automação Inteligente:</strong> Tarefas manuais e repetitivas são fontes constantes de erro humano. Automatizar testes e entregas libera o cérebro humano para pensar em soluções criativas.</li>
+        <li><strong>Automação Inteligente:</strong> Tarefas manuais e repetitivas são fontes constantes de erro humano.</li>
         <li><strong>Feedback Contínuo:</strong> Saber rapidamente se uma alteração melhorou ou piorou o desempenho do sistema.</li>
         <li><strong>Confiabilidade e Segurança:</strong> Garantir que o ambiente de estudo ou de produção seja previsível, blindado e seguro.</li>
       </ul>
 
       <h3>Por que estudar isso desde cedo?</h3>
-      <p>Entender automação e infraestrutura desde o início da faculdade muda nossa mentalidade. Não queremos apenas sistemas que funcionem "na minha máquina", mas soluções preparadas para o mundo real.</p>
+      <p>Entender automação e infraestrutura desde o início da faculdade muda nossa mentalidade. Confira também meu artigo sobre #arquitetura e deixe sugestões na minha página #cursos!</p>
     `
   }
 ];
 
 const COMENTARIOS_INICIAIS = [
   {
-    idArtigo: 101,
+    idArtigo: "artigo_101",
     autor: "Prof. Convidado (Demo)",
     cargo: "Pesquisador em Computação",
     data: "15 Out 2026",
-    texto: "Excelente reflexão, Mikélder! Começar a graduação já pensando em Arquitetura e Separação de Responsabilidades coloca você muitos passos à frente."
+    texto: "Excelente reflexão, Mikélder! Começar a graduação já pensando em #arquitetura coloca você muitos passos à frente. Vou deixar uma recomendação lá na sua página #cursos!"
+  },
+  {
+    idArtigo: "pagina_201",
+    autor: "Comunidade KELDE.dev",
+    cargo: "Engenharia de Software",
+    data: "Out 2026",
+    texto: "Espaço aberto para recomendações! Se você conhece ótimos cursos de #arquitetura, #dados ou #devops, comente abaixo para ajudar na trilha do Mikélder."
   }
 ];

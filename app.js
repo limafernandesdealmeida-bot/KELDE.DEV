@@ -1,5 +1,5 @@
 // ============================================================================
-// CAMADA DE LÓGICA, BANCO DE DADOS E ADMIN CMS (v5.0 ULTIMATE) - KELDE.DEV
+// CAMADA DE LÓGICA, PÁGINAS CRUD E MENÇÕES DISCORD (v6.0) - KELDE.DEV
 // ============================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   inicializarTemaSeguro();
   inicializarSistemaAuth();
   inicializarPainelAdmin();
+  inicializarCanaisEPaginas();
   inicializarTelemetria();
   inicializarBlog();
   inicializarRoadmap();
@@ -15,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   inicializarModal();
   inicializarCommandPalette();
   inicializarCurriculoPDF();
+  inicializarEscutaGlobalMencoes();
   inicializarBarraProgressoGlobal();
 });
 
@@ -51,49 +53,17 @@ function gerarHashSenha(senha, email) {
   return "ksec_" + (h2 >>> 0).toString(16).padStart(8, "0") + (h1 >>> 0).toString(16).padStart(8, "0");
 }
 
-// [PARSER AUTOMÁTICO] 4. Converte texto simples do Admin em HTML estruturado
-function converterTextoParaHTMLSeguro(textoBruto) {
-  const linhas = textoBruto.split(/\r?\n/);
-  let htmlFinal = "";
-  let emLista = false;
-
-  for (let linha of linhas) {
-    const limpa = linha.trim();
-    if (!limpa) {
-      if (emLista) {
-        htmlFinal += "</ul>";
-        emLista = false;
-      }
-      continue;
-    }
-
-    if (limpa.startsWith("### ")) {
-      if (emLista) {
-        htmlFinal += "</ul>";
-        emLista = false;
-      }
-      htmlFinal += `<h3>${escaparHTML(limpa.replace("### ", ""))}</h3>`;
-    } else if (limpa.startsWith("- ")) {
-      if (!emLista) {
-        htmlFinal += "<ul>";
-        emLista = true;
-      }
-      htmlFinal += `<li>${escaparHTML(limpa.replace("- ", ""))}</li>`;
-    } else {
-      if (emLista) {
-        htmlFinal += "</ul>";
-        emLista = false;
-      }
-      htmlFinal += `<p>${escaparHTML(limpa)}</p>`;
-    }
-  }
-  if (emLista) htmlFinal += "</ul>";
-  return htmlFinal;
+function normalizarSlug(texto) {
+  return String(texto || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9-_]/g, "")
+    .trim();
 }
 
 // ============================================================================
-// MOTOR DE BANCO DE DADOS NOSQL + RBAC ADMIN (KELDE_DB)
-// Credencial Mestre Admin: admin@kelde.dev | Senha Mestre: Kelde@2026
+// MOTOR DE BANCO DE DADOS NOSQL + PÁGINAS CRUD + RBAC ADMIN (KELDE_DB)
 // ============================================================================
 const EMAIL_ADMIN_MESTRE = "admin@kelde.dev";
 const HASH_ADMIN_MESTRE = gerarHashSenha("Kelde@2026", EMAIL_ADMIN_MESTRE);
@@ -115,6 +85,61 @@ const KELDE_DB = {
       return false;
     }
   },
+  obterTodasPaginas() {
+    const base = typeof DADOS_PAGINAS !== "undefined" ? DADOS_PAGINAS : [];
+    const salvas = this.lerTabela("kelde_db_paginas_admin", null);
+    return salvas ? salvas : base;
+  },
+  salvarOuEditarPagina(idEdicao, titulo, slug, icone, resumo, conteudoBruto) {
+    const sessao = this.obterUsuarioLogado();
+    if (!sessao || sessao.role !== "admin") return null;
+
+    const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    const hoje = new Date();
+    const dataFormatada = `${String(hoje.getDate()).padStart(2, "0")} ${meses[hoje.getMonth()]} ${hoje.getFullYear()}`;
+    const slugLimpo = normalizarSlug(slug) || "pagina";
+
+    const paginas = [...this.obterTodasPaginas()];
+
+    if (idEdicao) {
+      const idx = paginas.findIndex((p) => Number(p.id) === Number(idEdicao));
+      if (idx !== -1) {
+        paginas[idx] = {
+          ...paginas[idx],
+          titulo: titulo.trim(),
+          slug: slugLimpo,
+          icone: icone.trim() || "📄",
+          atualizadoEm: dataFormatada,
+          resumo: resumo.trim(),
+          conteudoBruto: conteudoBruto
+        };
+        this.salvarTabela("kelde_db_paginas_admin", paginas);
+        return paginas[idx];
+      }
+    }
+
+    const novaPagina = {
+      id: Date.now(),
+      slug: slugLimpo,
+      icone: icone.trim() || "📄",
+      titulo: titulo.trim(),
+      atualizadoEm: dataFormatada,
+      resumo: resumo.trim(),
+      conteudoBruto: conteudoBruto
+    };
+
+    paginas.push(novaPagina);
+    this.salvarTabela("kelde_db_paginas_admin", paginas);
+    return novaPagina;
+  },
+  excluirPagina(idPagina) {
+    const sessao = this.obterUsuarioLogado();
+    if (!sessao || sessao.role !== "admin") return false;
+
+    const filtradas = this.obterTodasPaginas().filter((p) => Number(p.id) !== Number(idPagina));
+    this.salvarTabela("kelde_db_paginas_admin", filtradas);
+    return true;
+  },
   obterTodosArtigos() {
     const artigosCustom = this.lerTabela("kelde_db_artigos_admin", null);
     if (!artigosCustom) {
@@ -122,7 +147,7 @@ const KELDE_DB = {
     }
     return artigosCustom;
   },
-  publicarNovoArtigo(titulo, categoria, tagsTexto, resumo, conteudoBruto) {
+  publicarNovoArtigo(titulo, slug, categoria, tagsTexto, resumo, conteudoBruto) {
     const sessao = this.obterUsuarioLogado();
     if (!sessao || sessao.role !== "admin") return false;
 
@@ -137,13 +162,14 @@ const KELDE_DB = {
 
     const novoArtigo = {
       id: Date.now(),
+      slug: normalizarSlug(slug) || normalizarSlug(titulo).slice(0, 18),
       titulo: titulo.trim(),
       data: dataFormatada,
       categoria: categoria,
       destaque: true,
       resumo: resumo.trim(),
       tags: tagsArray.length > 0 ? tagsArray : ["Engenharia"],
-      conteudo: converterTextoParaHTMLSeguro(conteudoBruto)
+      conteudo: converterTextoRicoParaHTML(conteudoBruto)
     };
 
     const atuais = [...this.obterTodosArtigos()];
@@ -267,19 +293,21 @@ const KELDE_DB = {
     this.salvarTabela("kelde_sessao_atual", sessao);
     return favs;
   },
-  obterComentarios(idArtigo) {
+  obterComentarios(chaveAlvo) {
     const base = typeof COMENTARIOS_INICIAIS !== "undefined" ? COMENTARIOS_INICIAIS : [];
     const salvos = this.lerTabela("kelde_db_comentarios", base);
-    return salvos.filter((c) => Number(c.idArtigo) === Number(idArtigo));
+    return salvos.filter(
+      (c) => String(c.idArtigo) === String(chaveAlvo) || `artigo_${c.idArtigo}` === String(chaveAlvo)
+    );
   },
-  adicionarComentario(idArtigo, texto) {
+  adicionarComentario(chaveAlvo, texto) {
     const sessao = this.obterUsuarioLogado();
     if (!sessao) return false;
 
     const base = typeof COMENTARIOS_INICIAIS !== "undefined" ? COMENTARIOS_INICIAIS : [];
     const todos = this.lerTabela("kelde_db_comentarios", base);
     todos.push({
-      idArtigo: Number(idArtigo),
+      idArtigo: String(chaveAlvo),
       autor: sessao.role === "admin" ? `👑 ${sessao.nome}` : sessao.nome,
       cargo: sessao.cargo,
       data: new Date().toLocaleDateString("pt-BR"),
@@ -291,7 +319,290 @@ const KELDE_DB = {
 };
 
 // ============================================================================
-// 5. FOTO DE PERFIL, DADOS E CABEÇALHO DE IMPRESSÃO A4
+// MOTOR DE MENÇÕES DISCORD (#canal) & SUPER-ATALHOS DE CURSOS (2-A e 3-B)
+// ============================================================================
+function obterMapaDeMencoes() {
+  const mapa = {
+    blog: { rotulo: "📰 Blog & Artigos", tipo: "secao", alvo: "blog" },
+    roadmap: { rotulo: "📊 Evolução & Telemetria", tipo: "secao", alvo: "roadmap" },
+    projetos: { rotulo: "🧪 Vitrine & Lab", tipo: "secao", alvo: "projetos" },
+    sobre: { rotulo: "👤 Sobre & Contato", tipo: "secao", alvo: "sobre" }
+  };
+
+  KELDE_DB.obterTodasPaginas().forEach((p) => {
+    const s = normalizarSlug(p.slug);
+    if (s) {
+      mapa[s] = { rotulo: `${p.icone || "📄"} ${p.titulo}`, tipo: "pagina", id: p.id, slug: s };
+    }
+  });
+
+  KELDE_DB.obterTodosArtigos().forEach((a, idx) => {
+    const s = normalizarSlug(a.slug) || `artigo${idx + 1}`;
+    mapa[s] = { rotulo: `📖 ${a.categoria}: ${a.titulo.slice(0, 26)}...`, tipo: "artigo", id: a.id, slug: s };
+  });
+
+  return mapa;
+}
+
+function aplicarMencoesDiscord(htmlTexto) {
+  if (typeof htmlTexto !== "string") return "";
+  const mapa = obterMapaDeMencoes();
+
+  return htmlTexto.replace(/(^|\s|>|\()\#([a-zA-Z0-9_-]+)/g, (match, prefixo, slugDigitado) => {
+    const chave = normalizarSlug(slugDigitado);
+    const destino = mapa[chave];
+    if (!destino) return match;
+
+    return `${prefixo}<button type="button" class="discord-mention" data-mention-slug="${escaparHTML(chave)}" title="Ir para #${escaparHTML(chave)}"># ${escaparHTML(destino.rotulo)}</button>`;
+  });
+}
+
+function converterLinhaCursoEmCard(linhaLimpa) {
+  if (linhaLimpa.startsWith("[FEITO]")) {
+    const partes = linhaLimpa.replace("[FEITO]", "").split("|").map((p) => p.trim());
+    const curso = partes[0] || "Curso Concluído";
+    const inst = partes[1] || "Instituição";
+    const link = partes[2] ? validarURLSegura(partes[2]) : "#";
+    const botaoCert =
+      link !== "#"
+        ? `<a href="${link}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">📜 Ver Certificado ↗</a>`
+        : `<span class="tag-chip">📜 Certificado em arquivo</span>`;
+
+    return `
+      <div class="course-card course-done">
+        <div>
+          <span class="course-badge badge-done">✅ CONCLUÍDO & CERTIFICADO</span>
+          <div class="course-title">${escaparHTML(curso)}</div>
+          <div class="course-inst">🏛️ ${escaparHTML(inst)}</div>
+        </div>
+        <div>${botaoCert}</div>
+      </div>
+    `;
+  }
+
+  if (linhaLimpa.startsWith("[FAZENDO]")) {
+    const partes = linhaLimpa.replace("[FAZENDO]", "").split("|").map((p) => p.trim());
+    const curso = partes[0] || "Curso em Andamento";
+    const inst = partes[1] || "Instituição";
+
+    return `
+      <div class="course-card course-doing">
+        <div>
+          <span class="course-badge badge-doing">⏳ EM ANDAMENTO</span>
+          <div class="course-title">${escaparHTML(curso)}</div>
+          <div class="course-inst">🏛️ ${escaparHTML(inst)}</div>
+        </div>
+        <span class="mono-accent" style="font-size: 0.78rem;">⚡ Estudando agora</span>
+      </div>
+    `;
+  }
+
+  if (linhaLimpa.startsWith("[FUTURO]")) {
+    const partes = linhaLimpa.replace("[FUTURO]", "").split("|").map((p) => p.trim());
+    const curso = partes[0] || "Curso Planejado";
+    const area = partes[1] || "Próximo Passo";
+
+    return `
+      <div class="course-card course-future">
+        <div>
+          <span class="course-badge badge-future">🎯 PLANEJADO (QUERO FAZER)</span>
+          <div class="course-title">${escaparHTML(curso)}</div>
+          <div class="course-inst">🧭 Foco: ${escaparHTML(area)}</div>
+        </div>
+        <span class="tag-chip" style="border: 1px solid var(--discord-border); color: var(--discord-text);">💬 Recomende onde fazer nos comentários!</span>
+      </div>
+    `;
+  }
+
+  return null;
+}
+
+function converterTextoRicoParaHTML(textoBruto) {
+  const linhas = String(textoBruto || "").split(/\r?\n/);
+  let htmlFinal = "";
+  let emLista = false;
+
+  for (let linha of linhas) {
+    const limpa = linha.trim();
+    if (!limpa) {
+      if (emLista) {
+        htmlFinal += "</ul>";
+        emLista = false;
+      }
+      continue;
+    }
+
+    const cardCurso = converterLinhaCursoEmCard(limpa);
+    if (cardCurso) {
+      if (emLista) {
+        htmlFinal += "</ul>";
+        emLista = false;
+      }
+      htmlFinal += cardCurso;
+      continue;
+    }
+
+    if (limpa.startsWith("### ")) {
+      if (emLista) {
+        htmlFinal += "</ul>";
+        emLista = false;
+      }
+      htmlFinal += `<h3>${aplicarMencoesDiscord(escaparHTML(limpa.replace("### ", "")))}</h3>`;
+    } else if (limpa.startsWith("- ")) {
+      if (!emLista) {
+        htmlFinal += "<ul>";
+        emLista = true;
+      }
+      htmlFinal += `<li>${aplicarMencoesDiscord(escaparHTML(limpa.replace("- ", "")))}</li>`;
+    } else {
+      if (emLista) {
+        htmlFinal += "</ul>";
+        emLista = false;
+      }
+      htmlFinal += `<p>${aplicarMencoesDiscord(escaparHTML(limpa))}</p>`;
+    }
+  }
+  if (emLista) htmlFinal += "</ul>";
+  return htmlFinal;
+}
+
+function inicializarEscutaGlobalMencoes() {
+  document.addEventListener("click", (e) => {
+    const btnMencao = e.target.closest("[data-mention-slug]");
+    if (!btnMencao) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    const slug = btnMencao.getAttribute("data-mention-slug");
+    navegarParaMencaoDiscord(slug);
+  });
+}
+
+function navegarParaMencaoDiscord(slug) {
+  const mapa = obterMapaDeMencoes();
+  const destino = mapa[normalizarSlug(slug)];
+  if (!destino) return;
+
+  if (destino.tipo === "pagina") {
+    abrirPaginaNoModal(destino.id);
+  } else if (destino.tipo === "artigo") {
+    abrirArtigoNoModal(destino.id);
+  } else if (destino.tipo === "secao") {
+    document.getElementById("modal-leitura").classList.remove("open");
+    document.body.style.overflow = "auto";
+    const el = document.getElementById(destino.alvo);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  }
+}
+
+// ============================================================================
+// 5. CANAIS DISCORD & PÁGINAS INTERATIVAS (1-C)
+// ============================================================================
+function inicializarCanaisEPaginas() {
+  const barraCanais = document.getElementById("barra-canais-discord");
+  const gridPaginas = document.getElementById("grid-paginas");
+  const paginas = KELDE_DB.obterTodasPaginas();
+  const artigos = KELDE_DB.obterTodosArtigos();
+
+  // 1. Renderiza a Barra de Canais estilo Discord no Hero
+  const botoesPaginas = paginas.map(
+    (p) => `
+      <button type="button" class="discord-channel-pill" data-mention-slug="${escaparHTML(p.slug)}">
+        <span>#</span> <span>${escaparHTML(p.icone)} ${escaparHTML(p.slug)}</span>
+      </button>
+    `
+  );
+
+  const botoesArtigos = artigos.map(
+    (a, i) => `
+      <button type="button" class="discord-channel-pill" data-mention-slug="${escaparHTML(a.slug || `artigo${i + 1}`)}">
+        <span>#</span> <span>📖 ${escaparHTML(a.slug || `artigo${i + 1}`)}</span>
+      </button>
+    `
+  );
+
+  barraCanais.innerHTML = [
+    ...botoesPaginas,
+    ...botoesArtigos,
+    `<button type="button" class="discord-channel-pill" data-mention-slug="projetos"><span>#</span> <span>🧪 vitrine-lab</span></button>`,
+    `<button type="button" class="discord-channel-pill" data-mention-slug="roadmap"><span>#</span> <span>📊 evolucao</span></button>`
+  ].join("");
+
+  // 2. Renderiza os Cards das Páginas Especiais (#cursos, etc.)
+  if (paginas.length === 0) {
+    gridPaginas.innerHTML = `<p style="color: var(--text-secondary);">Nenhuma página criada ainda. Acesse o KELDE Studio CMS para criar!</p>`;
+    return;
+  }
+
+  gridPaginas.innerHTML = paginas
+    .map((p) => {
+      const qtdComentarios = KELDE_DB.obterComentarios(`pagina_${p.id}`).length;
+      return `
+        <article class="page-card" data-open-page-id="${Number(p.id)}">
+          <div>
+            <div class="card-meta-top">
+              <span class="discord-mention-static">#${escaparHTML(p.slug)}</span>
+              <span class="mono-accent">💬 ${qtdComentarios} comentário(s)</span>
+            </div>
+            <h3 class="card-title"><span class="page-card-icon">${escaparHTML(p.icone)}</span> ${escaparHTML(p.titulo)}</h3>
+            <p class="card-excerpt">${escaparHTML(p.resumo)}</p>
+          </div>
+          <div class="card-footer">
+            <span>📅 Atualizado: ${escaparHTML(p.atualizadoEm)}</span>
+            <span class="read-more-link">Abrir Página & Comentar →</span>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+
+  gridPaginas.querySelectorAll("[data-open-page-id]").forEach((card) => {
+    card.addEventListener("click", () => {
+      abrirPaginaNoModal(Number(card.getAttribute("data-open-page-id")));
+    });
+  });
+}
+
+function abrirPaginaNoModal(idPagina) {
+  const pagina = KELDE_DB.obterTodasPaginas().find((p) => Number(p.id) === Number(idPagina));
+  if (!pagina) return;
+
+  const usuario = KELDE_DB.obterUsuarioLogado();
+  const btnEditarModal = document.getElementById("btn-editar-direto-modal");
+
+  document.getElementById("modal-categoria").textContent = `${pagina.icone} Página Interativa`;
+  document.getElementById("modal-slug-badge").textContent = `#${pagina.slug}`;
+  document.getElementById("modal-data").textContent = `Atualizado em ${pagina.atualizadoEm}`;
+  document.getElementById("modal-tempo").textContent = "💬 Aberto a recomendações";
+  document.getElementById("modal-titulo").textContent = `${pagina.icone} ${pagina.titulo}`;
+  document.getElementById("modal-tags").innerHTML = `
+    <span class="tag-chip">Mencione em qualquer lugar usando #${escaparHTML(pagina.slug)}</span>
+  `;
+
+  document.getElementById("modal-conteudo").innerHTML = converterTextoRicoParaHTML(pagina.conteudoBruto);
+  document.getElementById("titulo-secao-comentarios").textContent = `💬 Recomendações & Comentários em #${pagina.slug}`;
+
+  if (usuario && usuario.role === "admin") {
+    btnEditarModal.style.display = "inline-flex";
+    btnEditarModal.onclick = () => {
+      document.getElementById("modal-leitura").classList.remove("open");
+      document.body.style.overflow = "auto";
+      carregarPaginaNoFormularioAdmin(pagina.id);
+    };
+  } else {
+    btnEditarModal.style.display = "none";
+  }
+
+  renderizarComentariosModal(`pagina_${pagina.id}`);
+
+  const modal = document.getElementById("modal-leitura");
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+}
+
+// ============================================================================
+// 6. FOTO DE PERFIL E DADOS PESSOAIS
 // ============================================================================
 function inicializarFotoPerfil() {
   const img = document.getElementById("img-foto-perfil");
@@ -326,11 +637,10 @@ function inicializarPerfilSeguro() {
   document.getElementById("texto-sobre").textContent = DADOS_PERFIL.sobreMim;
   document.getElementById("ano-atual").textContent = new Date().getFullYear();
 
-  // Cabeçalho do Currículo em PDF
   document.getElementById("print-nome").textContent = `${DADOS_PERFIL.nomeCompleto} (${DADOS_PERFIL.marca}${DADOS_PERFIL.sufixoMarca})`;
   document.getElementById("print-instituicao").textContent = DADOS_PERFIL.instituicao;
   document.getElementById("print-headline").textContent = DADOS_PERFIL.headline;
-  document.getElementById("print-contatos").textContent = `Portfólio: ${DADOS_PERFIL.urlPublica || "kelde.dev"} | GitHub: ${DADOS_PERFIL.contatos.github} | Tel: ${DADOS_PERFIL.contatos.telefoneExibicao}`;
+  document.getElementById("print-contatos").textContent = `Portfólio: ${DADOS_PERFIL.urlPublica || "keldedev.vercel.app"} | GitHub: ${DADOS_PERFIL.contatos.github} | Tel: ${DADOS_PERFIL.contatos.telefoneExibicao}`;
 
   const containerContatos = document.getElementById("lista-contatos");
   const c = DADOS_PERFIL.contatos;
@@ -371,7 +681,7 @@ function inicializarPerfilSeguro() {
 }
 
 // ============================================================================
-// 6. TELEMETRIA ACADÊMICA GAMIFICADA
+// 7. TELEMETRIA ACADÊMICA GAMIFICADA
 // ============================================================================
 function inicializarTelemetria() {
   const grid = document.getElementById("grid-telemetria");
@@ -400,7 +710,7 @@ function inicializarTelemetria() {
 }
 
 // ============================================================================
-// 7. SISTEMA DE AUTENTICAÇÃO E PAINEL ADMIN (KELDE STUDIO CMS v5.0)
+// 8. SISTEMA DE AUTENTICAÇÃO E PAINEL ADMIN (KELDE STUDIO CMS v6.0)
 // ============================================================================
 function atualizarInterfaceUsuario() {
   const areaNav = document.getElementById("area-usuario-nav");
@@ -415,10 +725,10 @@ function atualizarInterfaceUsuario() {
         <button id="btn-sair-conta" class="btn-logout-mini" type="button">(Sair)</button>
       </div>
     `;
-    btnHero.textContent = "⚡ Abrir KELDE Studio (Artigos & LinkedIn)";
-    btnHero.onclick = () => abrirModalAdmin("escrever");
+    btnHero.textContent = "⚡ Abrir KELDE Studio (Gerenciar #cursos & Blog)";
+    btnHero.onclick = () => abrirModalAdmin("paginas");
 
-    document.getElementById("btn-abrir-cms-nav").addEventListener("click", () => abrirModalAdmin("escrever"));
+    document.getElementById("btn-abrir-cms-nav").addEventListener("click", () => abrirModalAdmin("paginas"));
     document.getElementById("btn-sair-conta").addEventListener("click", () => {
       KELDE_DB.encerrarSessao();
       atualizarInterfaceUsuario();
@@ -544,17 +854,82 @@ function inicializarSistemaAuth() {
     inicializarBlog();
 
     if (res.usuario.role === "admin") {
-      abrirModalAdmin("escrever");
+      abrirModalAdmin("paginas");
     }
   });
 }
 
 // ============================================================================
-// 8. GERADOR DE COPY MAGNÉTICA PARA LINKEDIN & PAINEL ADMIN
+// 9. PAINEL ADMIN v6.0 (PÁGINAS CRUD, MENÇÕES #, LINKEDIN & GITOPS)
 // ============================================================================
+function renderizarBarrasDeMencoesAdmin() {
+  const mapa = obterMapaDeMencoes();
+  const chaves = Object.keys(mapa);
+
+  const htmlChips =
+    `<span class="mono-accent" style="font-size: 0.74rem;">💬 Mencionar # (1-Clique):</span>` +
+    chaves
+      .map(
+        (slug) =>
+          `<button type="button" class="chip-insert-mencao" data-slug-insert="#${escaparHTML(slug)}">#${escaparHTML(slug)}</button>`
+      )
+      .join("");
+
+  const barraPag = document.getElementById("helper-mencoes-pag");
+  const barraArt = document.getElementById("helper-mencoes-art");
+
+  if (barraPag) {
+    barraPag.innerHTML = htmlChips;
+    barraPag.querySelectorAll(".chip-insert-mencao").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const txt = document.getElementById("pag-conteudo");
+        txt.value += " " + btn.getAttribute("data-slug-insert") + " ";
+        txt.focus();
+      });
+    });
+  }
+
+  if (barraArt) {
+    barraArt.innerHTML = htmlChips;
+    barraArt.querySelectorAll(".chip-insert-mencao").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const txt = document.getElementById("art-conteudo");
+        txt.value += " " + btn.getAttribute("data-slug-insert") + " ";
+        txt.focus();
+      });
+    });
+  }
+}
+
+function carregarPaginaNoFormularioAdmin(idPagina) {
+  const pagina = KELDE_DB.obterTodasPaginas().find((p) => Number(p.id) === Number(idPagina));
+  if (!pagina) return;
+
+  abrirModalAdmin("paginas");
+  document.getElementById("pag-id-edicao").value = String(pagina.id);
+  document.getElementById("pag-titulo").value = pagina.titulo;
+  document.getElementById("pag-slug").value = pagina.slug;
+  document.getElementById("pag-icone").value = pagina.icone || "🎓";
+  document.getElementById("pag-resumo").value = pagina.resumo;
+  document.getElementById("pag-conteudo").value = pagina.conteudoBruto;
+
+  document.getElementById("btn-salvar-pagina").textContent = `💾 Salvar Alterações em #${pagina.slug}`;
+  document.getElementById("btn-cancelar-edicao-pag").style.display = "inline-flex";
+  document.getElementById("admin-feedback").style.color = "var(--accent-primary)";
+  document.getElementById("admin-feedback").textContent = `✏️ Editando a página #${pagina.slug}. Altere os cursos abaixo e clique em Salvar!`;
+}
+
+function limparFormularioPaginaAdmin() {
+  document.getElementById("form-nova-pagina").reset();
+  document.getElementById("pag-id-edicao").value = "";
+  document.getElementById("pag-icone").value = "🎓";
+  document.getElementById("btn-salvar-pagina").textContent = "💾 Salvar Nova Página no Sistema";
+  document.getElementById("btn-cancelar-edicao-pag").style.display = "none";
+}
+
 function gerarTextoLinkedIn(artigo, estilo) {
   if (!artigo) return "";
-  const urlSite = DADOS_PERFIL.urlPublica || "https://limafernandesdealmeida-bot.github.io/KELDE.DEV/";
+  const urlSite = DADOS_PERFIL.urlPublica || "https://keldedev.vercel.app";
   const hashtags = artigo.tags.map((t) => `#${t.replace(/\s+/g, "")}`).join(" ") + " #EngenhariaDeSoftware #Unicesumar #LearningInPublic";
 
   if (estilo === "aida") {
@@ -566,12 +941,8 @@ Hoje publiquei uma nova nota técnica no meu laboratório digital (KELDE.dev) in
 💡 O ponto central da discussão:
 "${artigo.resumo}"
 
-Como estudante de Engenharia de Software na Unicesumar, tenho documentado minha jornada pública unindo rigor acadêmico, arquitetura de sistemas e prática contínua.
-
-🔗 Leia o artigo completo (com tempo de leitura de ${calcularTempoLeitura(artigo.conteudo)}) direto no meu portal:
+🔗 Leia o artigo completo e confira minha trilha de estudos direto no meu portal:
 ${urlSite}
-
-E para você: qual é o maior desafio quando o assunto é ${artigo.categoria}? Vamos debater nos comentários! 👇
 
 ${hashtags}`;
   }
@@ -582,7 +953,6 @@ ${hashtags}`;
 Destaques da análise de hoje sobre ${artigo.categoria}:
 • Visão sistêmica voltada à escalabilidade e boas práticas de Engenharia de Software;
 • Síntese: ${artigo.resumo}
-• Conexão entre fundamentos acadêmicos e aplicação no mercado real.
 
 📖 Leitura completa disponível em:
 ${urlSite}
@@ -590,20 +960,16 @@ ${urlSite}
 ${hashtags}`;
   }
 
-  // Estilo padrão: Storytelling Acadêmico
   return `Construir uma carreira sólida em Engenharia de Software exige muito mais do que decorar comandos: exige entender o "porquê" antes do "como". 🧠💻
 
-Seguindo minha filosofia de Learning in Public (aprender em público) durante a graduação na Unicesumar, acabei de publicar um novo artigo no meu portfólio KELDE.dev:
+Seguindo minha filosofia de Learning in Public durante a graduação na Unicesumar, acabei de publicar um novo artigo no meu portfólio KELDE.dev:
 
 ✨ "${artigo.titulo}"
 
-Nele, compartilho minha visão sobre ${artigo.categoria} e por que acredito que:
 "${artigo.resumo}"
 
-Fica o convite para ler o texto completo, testar a arquitetura do meu portal e até deixar seu comentário direto no banco de dados do site:
+Fica o convite para ler o texto completo e deixar seu comentário direto no site:
 🔗 ${urlSite}
-
-Toda crítica construtiva ou troca de experiência será muito bem-vinda! 🚀
 
 ${hashtags}`;
 }
@@ -636,30 +1002,36 @@ function atualizarGeradorLinkedIn(idSelecionado = null) {
 }
 
 function alternarAbaAdmin(aba, idArtigoParaLinkedIn = null) {
+  const tabPaginas = document.getElementById("tab-admin-paginas");
   const tabEscrever = document.getElementById("tab-admin-escrever");
   const tabLinkedin = document.getElementById("tab-admin-linkedin");
   const tabGerenciar = document.getElementById("tab-admin-gerenciar");
 
+  const formPagina = document.getElementById("form-nova-pagina");
   const formArtigo = document.getElementById("form-novo-artigo");
   const painelLinkedin = document.getElementById("painel-admin-linkedin");
   const painelGerenciar = document.getElementById("painel-admin-gerenciar");
 
+  tabPaginas.classList.toggle("active", aba === "paginas");
   tabEscrever.classList.toggle("active", aba === "escrever");
   tabLinkedin.classList.toggle("active", aba === "linkedin");
   tabGerenciar.classList.toggle("active", aba === "gerenciar");
 
+  formPagina.style.display = aba === "paginas" ? "block" : "none";
   formArtigo.style.display = aba === "escrever" ? "block" : "none";
   painelLinkedin.style.display = aba === "linkedin" ? "block" : "none";
   painelGerenciar.style.display = aba === "gerenciar" ? "block" : "none";
 
+  renderizarBarrasDeMencoesAdmin();
+
   if (aba === "linkedin") {
     atualizarGeradorLinkedIn(idArtigoParaLinkedIn);
-  } else if (aba === "gerenciar") {
+  } else if (aba === "gerenciar" || aba === "paginas") {
     renderizarDadosPainelAdmin();
   }
 }
 
-function abrirModalAdmin(abaInicial = "escrever") {
+function abrirModalAdmin(abaInicial = "paginas") {
   const usuario = KELDE_DB.obterUsuarioLogado();
   if (!usuario || usuario.role !== "admin") return;
 
@@ -671,6 +1043,7 @@ function abrirModalAdmin(abaInicial = "escrever") {
 }
 
 function renderizarDadosPainelAdmin() {
+  const paginas = KELDE_DB.obterTodasPaginas();
   const artigos = KELDE_DB.obterTodosArtigos();
   const usuarios = KELDE_DB.lerTabela("kelde_db_usuarios", []);
   const baseCom = typeof COMENTARIOS_INICIAIS !== "undefined" ? COMENTARIOS_INICIAIS : [];
@@ -678,28 +1051,68 @@ function renderizarDadosPainelAdmin() {
 
   document.getElementById("admin-stats-grid").innerHTML = `
     <div class="stat-box">
+      <div class="stat-number">${paginas.length}</div>
+      <div class="stat-label">Páginas (#canais)</div>
+    </div>
+    <div class="stat-box">
       <div class="stat-number">${artigos.length}</div>
-      <div class="stat-label">Artigos Publicados</div>
+      <div class="stat-label">Artigos no Blog</div>
     </div>
     <div class="stat-box">
       <div class="stat-number">${usuarios.length}</div>
-      <div class="stat-label">Leitores Cadastrados</div>
+      <div class="stat-label">Leitores no Banco</div>
     </div>
     <div class="stat-box">
       <div class="stat-number">${comentarios.length}</div>
-      <div class="stat-label">Comentários no Banco</div>
+      <div class="stat-label">Comentários</div>
     </div>
   `;
 
+  // Lista rápida de páginas na Aba 1 (Editar / Excluir)
+  const listaPagEl = document.getElementById("lista-admin-paginas-rapida");
+  if (listaPagEl) {
+    listaPagEl.innerHTML = paginas
+      .map(
+        (p) => `
+      <div class="admin-list-item">
+        <div>
+          <strong>${escaparHTML(p.icone)} ${escaparHTML(p.titulo)}</strong>
+          <div style="font-size: 0.78rem; color: var(--text-secondary);">
+            Atalho Discord: <span class="mono-accent">#${escaparHTML(p.slug)}</span> • Atualizado: ${escaparHTML(p.atualizadoEm)}
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.4rem;">
+          <button type="button" class="btn-edit-item" data-edit-pag-id="${Number(p.id)}">✏️ Editar Cursos/Texto</button>
+          <button type="button" class="btn-delete-item" data-del-pag-id="${Number(p.id)}">🗑️ Excluir</button>
+        </div>
+      </div>
+    `
+      )
+      .join("");
+
+    listaPagEl.querySelectorAll("[data-edit-pag-id]").forEach((btn) => {
+      btn.addEventListener("click", () => carregarPaginaNoFormularioAdmin(Number(btn.getAttribute("data-edit-pag-id"))));
+    });
+
+    listaPagEl.querySelectorAll("[data-del-pag-id]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        KELDE_DB.excluirPagina(Number(btn.getAttribute("data-del-pag-id")));
+        renderizarDadosPainelAdmin();
+        inicializarCanaisEPaginas();
+      });
+    });
+  }
+
+  // Lista de artigos na Aba 4
   const listaArtEl = document.getElementById("lista-admin-artigos");
   listaArtEl.innerHTML = artigos
     .map(
-      (a) => `
+      (a, idx) => `
     <div class="admin-list-item">
       <div>
         <strong>${escaparHTML(a.titulo)}</strong>
         <div style="font-size: 0.78rem; color: var(--text-secondary);">
-          <span class="mono-accent">${escaparHTML(a.categoria)}</span> • ${escaparHTML(a.data)}
+          <span class="mono-accent">#${escaparHTML(a.slug || `artigo${idx + 1}`)}</span> • ${escaparHTML(a.categoria)} • ${escaparHTML(a.data)}
         </div>
       </div>
       <button type="button" class="btn-delete-item" data-del-id="${Number(a.id)}">🗑️ Excluir</button>
@@ -708,11 +1121,12 @@ function renderizarDadosPainelAdmin() {
     )
     .join("");
 
-  listaArtEl.querySelectorAll(".btn-delete-item").forEach((btn) => {
+  listaArtEl.querySelectorAll("[data-del-id]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const id = Number(btn.getAttribute("data-del-id"));
       KELDE_DB.excluirArtigo(id);
       renderizarDadosPainelAdmin();
+      inicializarCanaisEPaginas();
       inicializarBlog();
     });
   });
@@ -731,7 +1145,7 @@ function renderizarDadosPainelAdmin() {
             Cargo: ${escaparHTML(u.cargo)} • Criado em: ${escaparHTML(u.criadoEm)}
           </div>
         </div>
-        <span class="tag-chip" title="Hash Criptográfico Salvo no Banco">🔒 ${escaparHTML(u.senhaHash)}</span>
+        <span class="tag-chip">🔒 ${escaparHTML(u.senhaHash)}</span>
       </div>
     `
       )
@@ -740,16 +1154,19 @@ function renderizarDadosPainelAdmin() {
 }
 
 function exportarArquivoDadosJS() {
+  const paginasAtuais = KELDE_DB.obterTodasPaginas();
   const artigosAtuais = KELDE_DB.obterTodosArtigos();
   const baseCom = typeof COMENTARIOS_INICIAIS !== "undefined" ? COMENTARIOS_INICIAIS : [];
   const comentariosAtuais = KELDE_DB.lerTabela("kelde_db_comentarios", baseCom);
   const telemetriaAtual = typeof DADOS_TELEMETRIA !== "undefined" ? DADOS_TELEMETRIA : [];
 
   const conteudoArquivo = `// ============================================================================
-// ARQUIVO DE DADOS GERADO PELO KELDE STUDIO CMS (v5.0 ULTIMATE)
+// ARQUIVO DE DADOS GERADO PELO KELDE STUDIO CMS (v6.0 ULTIMATE)
 // ============================================================================
 
 const DADOS_PERFIL = ${JSON.stringify(DADOS_PERFIL, null, 2)};
+
+const DADOS_PAGINAS = ${JSON.stringify(paginasAtuais, null, 2)};
 
 const DADOS_TELEMETRIA = ${JSON.stringify(telemetriaAtual, null, 2)};
 
@@ -776,19 +1193,27 @@ const COMENTARIOS_INICIAIS = ${JSON.stringify(comentariosAtuais, null, 2)};
 function inicializarPainelAdmin() {
   const modal = document.getElementById("modal-admin");
   const btnFechar = document.getElementById("btn-fechar-admin");
+  const tabPaginas = document.getElementById("tab-admin-paginas");
   const tabEscrever = document.getElementById("tab-admin-escrever");
   const tabLinkedin = document.getElementById("tab-admin-linkedin");
   const tabGerenciar = document.getElementById("tab-admin-gerenciar");
+
+  const formPagina = document.getElementById("form-nova-pagina");
   const formArtigo = document.getElementById("form-novo-artigo");
   const feedback = document.getElementById("admin-feedback");
   const btnExportar = document.getElementById("btn-exportar-dados");
   const btnCopiarLinkedin = document.getElementById("btn-copiar-linkedin");
+  const btnCancelarEdicaoPag = document.getElementById("btn-cancelar-edicao-pag");
 
   btnFechar.addEventListener("click", () => {
     modal.classList.remove("open");
     modal.setAttribute("aria-hidden", "true");
   });
 
+  tabPaginas.addEventListener("click", () => {
+    feedback.textContent = "";
+    alternarAbaAdmin("paginas");
+  });
   tabEscrever.addEventListener("click", () => {
     feedback.textContent = "";
     alternarAbaAdmin("escrever");
@@ -802,22 +1227,58 @@ function inicializarPainelAdmin() {
     alternarAbaAdmin("gerenciar");
   });
 
+  // Botões de inserção rápida de cursos [FEITO], [FAZENDO], [FUTURO]
+  document.querySelectorAll(".chip-insert-pag").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const txt = document.getElementById("pag-conteudo");
+      txt.value += btn.getAttribute("data-insert");
+      txt.focus();
+    });
+  });
+
+  btnCancelarEdicaoPag.addEventListener("click", () => {
+    limparFormularioPaginaAdmin();
+    feedback.textContent = "";
+  });
+
+  formPagina.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const idEdicao = document.getElementById("pag-id-edicao").value;
+    const titulo = document.getElementById("pag-titulo").value;
+    const slug = document.getElementById("pag-slug").value;
+    const icone = document.getElementById("pag-icone").value;
+    const resumo = document.getElementById("pag-resumo").value;
+    const conteudo = document.getElementById("pag-conteudo").value;
+
+    const paginaSalva = KELDE_DB.salvarOuEditarPagina(idEdicao, titulo, slug, icone, resumo, conteudo);
+    if (paginaSalva) {
+      limparFormularioPaginaAdmin();
+      inicializarCanaisEPaginas();
+      renderizarDadosPainelAdmin();
+      renderizarBarrasDeMencoesAdmin();
+      feedback.style.color = "var(--success-color)";
+      feedback.textContent = `✅ Página #${paginaSalva.slug} salva com sucesso! Para atualizar na Vercel, baixe o dados.js na Aba 4.`;
+    }
+  });
+
   formArtigo.addEventListener("submit", (e) => {
     e.preventDefault();
     const titulo = document.getElementById("art-titulo").value;
+    const slug = document.getElementById("art-slug").value;
     const categoria = document.getElementById("art-categoria").value;
     const tags = document.getElementById("art-tags").value;
     const resumo = document.getElementById("art-resumo").value;
     const conteudo = document.getElementById("art-conteudo").value;
 
-    const novo = KELDE_DB.publicarNovoArtigo(titulo, categoria, tags, resumo, conteudo);
+    const novo = KELDE_DB.publicarNovoArtigo(titulo, slug, categoria, tags, resumo, conteudo);
     if (novo) {
       formArtigo.reset();
       categoriaAtiva = "Todos";
+      inicializarCanaisEPaginas();
       inicializarBlog();
       renderizarDadosPainelAdmin();
       feedback.style.color = "var(--success-color)";
-      feedback.textContent = "✅ Artigo publicado! Aqui está a copy pronta para você postar no LinkedIn:";
+      feedback.textContent = `✅ Artigo #${novo.slug} publicado! Confira a copy para LinkedIn abaixo:`;
       alternarAbaAdmin("linkedin", novo.id);
     }
   });
@@ -833,12 +1294,12 @@ function inicializarPainelAdmin() {
   btnExportar.addEventListener("click", () => {
     exportarArquivoDadosJS();
     feedback.style.color = "var(--accent-primary)";
-    feedback.textContent = "📦 Arquivo dados.js atualizado foi baixado! Basta substituí-lo na sua pasta e no GitHub.";
+    feedback.textContent = "📦 Arquivo dados.js v6.0 baixado! Suba no seu GitHub para atualizar na Vercel.";
   });
 }
 
 // ============================================================================
-// 9. COMMAND PALETTE (CTRL + K / ESTILO VALE DO SILÍCIO)
+// 10. COMMAND PALETTE (CTRL + K) INTEGRADO COM PÁGINAS (#)
 // ============================================================================
 function inicializarCommandPalette() {
   const modalCmd = document.getElementById("modal-cmd");
@@ -851,50 +1312,41 @@ function inicializarCommandPalette() {
   let comandosFiltrados = [];
 
   function obterListaComandos() {
+    const paginasCmd = KELDE_DB.obterTodasPaginas().map((p) => ({
+      titulo: `${p.icone} Abrir Página: ${p.titulo}`,
+      detalhe: `#${p.slug}`,
+      acao: () => abrirPaginaNoModal(p.id)
+    }));
+
     const base = [
       {
-        titulo: "📚 Ir para Blog & Artigos",
-        detalhe: "Navegação",
-        acao: () => document.getElementById("blog").scrollIntoView({ behavior: "smooth" })
-      },
-      {
-        titulo: "📊 Ver Telemetria Acadêmica & Evolução",
-        detalhe: "Métricas Unicesumar",
-        acao: () => document.getElementById("roadmap").scrollIntoView({ behavior: "smooth" })
-      },
-      {
-        titulo: "🧪 Ir para Vitrine de Projetos & Lab",
-        detalhe: "Estudos de Caso",
-        acao: () => document.getElementById("projetos").scrollIntoView({ behavior: "smooth" })
+        titulo: "👑 Abrir KELDE Studio CMS (Gerenciar Páginas & Artigos)",
+        detalhe: "Admin",
+        acao: () => {
+          const usr = KELDE_DB.obterUsuarioLogado();
+          if (usr && usr.role === "admin") abrirModalAdmin("paginas");
+          else abrirModalAuth("login");
+        }
       },
       {
         titulo: "📄 Gerar Currículo Executivo em PDF (A4)",
-        detalhe: "Impressão Instantânea",
+        detalhe: "Impressão",
         acao: () => window.print()
       },
       {
         titulo: "🌗 Alternar Tema Claro / Escuro",
         detalhe: "UI/UX",
         acao: () => document.getElementById("btn-tema").click()
-      },
-      {
-        titulo: "👑 Abrir Painel Admin / Login (KELDE Studio)",
-        detalhe: "CMS & LinkedIn",
-        acao: () => {
-          const usr = KELDE_DB.obterUsuarioLogado();
-          if (usr && usr.role === "admin") abrirModalAdmin("escrever");
-          else abrirModalAuth("login");
-        }
       }
     ];
 
-    const artigos = KELDE_DB.obterTodosArtigos().map((a) => ({
+    const artigosCmd = KELDE_DB.obterTodosArtigos().map((a, idx) => ({
       titulo: `📖 Ler Artigo: ${a.titulo}`,
-      detalhe: a.categoria,
+      detalhe: `#${a.slug || `artigo${idx + 1}`}`,
       acao: () => abrirArtigoNoModal(a.id)
     }));
 
-    return [...base, ...artigos];
+    return [...paginasCmd, ...base, ...artigosCmd];
   }
 
   function renderizarComandos() {
@@ -909,7 +1361,7 @@ function inicializarCommandPalette() {
     }
 
     if (comandosFiltrados.length === 0) {
-      listaCmd.innerHTML = `<div style="padding: 1rem; color: var(--text-secondary);">Nenhum comando encontrado.</div>`;
+      listaCmd.innerHTML = `<div style="padding: 1rem; color: var(--text-secondary);">Nenhum comando ou #canal encontrado.</div>`;
       return;
     }
 
@@ -926,8 +1378,7 @@ function inicializarCommandPalette() {
 
     listaCmd.querySelectorAll(".cmd-item").forEach((el) => {
       el.addEventListener("click", () => {
-        const i = Number(el.getAttribute("data-cmd-idx"));
-        executarComando(i);
+        executarComando(Number(el.getAttribute("data-cmd-idx")));
       });
     });
   }
@@ -993,28 +1444,23 @@ function inicializarCommandPalette() {
   });
 }
 
-// ============================================================================
-// 10. CURRÍCULO EXECUTIVO EM PDF (1-CLICK PRINT ENGINE)
-// ============================================================================
 function inicializarCurriculoPDF() {
   const btnPdf = document.getElementById("btn-cv-pdf");
   if (!btnPdf) return;
-  btnPdf.addEventListener("click", () => {
-    window.print();
-  });
+  btnPdf.addEventListener("click", () => window.print());
 }
 
 // ============================================================================
-// 11. MOTOR DO BLOG, ROADMAP, PROJETOS E MODAL DE LEITURA
+// 11. MOTOR DO BLOG, ROADMAP, PROJETOS E MODAL COM MENÇÕES DISCORD NOS COMENTÁRIOS
 // ============================================================================
 let categoriaAtiva = "Todos";
 let termoBusca = "";
 
 function calcularTempoLeitura(htmlTexto) {
-  const textoLimpo = htmlTexto.replace(/<[^>]*>/g, " ");
+  const textoLimpo = String(htmlTexto || "").replace(/<[^>]*>/g, " ");
   const totalPalavras = textoLimpo.trim().split(/\s+/).length;
   const minutos = Math.max(1, Math.ceil(totalPalavras / 200));
-  return `${minutos} min de leitura`;
+  return `${minutos} min`;
 }
 
 function inicializarBlog() {
@@ -1095,14 +1541,16 @@ function renderizarArtigos() {
   }
 
   grid.innerHTML = artigosFiltrados
-    .map((artigo) => {
+    .map((artigo, idx) => {
       const tempo = calcularTempoLeitura(artigo.conteudo);
       const ehFav = listaFavs.includes(artigo.id);
+      const slugExibicao = artigo.slug || `artigo${idx + 1}`;
       return `
       <article class="article-card" data-id="${Number(artigo.id)}">
         <div>
           <div class="card-meta-top">
             <span class="badge-cat">${escaparHTML(artigo.categoria)}</span>
+            <span class="discord-mention-static">#${escaparHTML(slugExibicao)}</span>
             <button class="btn-fav-star ${ehFav ? "favorited" : ""}" data-fav-id="${Number(artigo.id)}" title="Salvar nos meus favoritos">
               ${ehFav ? "★ Salvo" : "☆ Favoritar"}
             </button>
@@ -1192,14 +1640,14 @@ function inicializarProjetos() {
   ).join("");
 }
 
-function renderizarComentariosModal(idArtigo) {
+function renderizarComentariosModal(chaveAlvo) {
   const listaEl = document.getElementById("lista-comentarios-modal");
   const areaForm = document.getElementById("area-form-comentario");
-  const comentarios = KELDE_DB.obterComentarios(idArtigo);
+  const comentarios = KELDE_DB.obterComentarios(chaveAlvo);
   const usuario = KELDE_DB.obterUsuarioLogado();
 
   if (comentarios.length === 0) {
-    listaEl.innerHTML = `<p style="color: var(--text-secondary); font-size: 0.9rem;">Seja o primeiro a comentar neste artigo!</p>`;
+    listaEl.innerHTML = `<p style="color: var(--text-secondary); font-size: 0.9rem;">Seja o primeiro a deixar um comentário ou recomendação aqui!</p>`;
   } else {
     listaEl.innerHTML = comentarios
       .map(
@@ -1209,7 +1657,7 @@ function renderizarComentariosModal(idArtigo) {
           <strong>${escaparHTML(c.autor)} <span class="mono-accent" style="font-weight:400;">• ${escaparHTML(c.cargo)}</span></strong>
           <span style="color: var(--text-muted);">${escaparHTML(c.data)}</span>
         </div>
-        <p style="font-size: 0.94rem;">${escaparHTML(c.texto)}</p>
+        <p style="font-size: 0.94rem;">${aplicarMencoesDiscord(escaparHTML(c.texto))}</p>
       </div>
     `
       )
@@ -1219,7 +1667,7 @@ function renderizarComentariosModal(idArtigo) {
   if (usuario) {
     areaForm.innerHTML = `
       <form id="form-novo-comentario">
-        <textarea id="texto-novo-comentario" class="comment-textarea" required maxlength="400" placeholder="Escreva seu comentário como ${escaparHTML(usuario.nome)}..."></textarea>
+        <textarea id="texto-novo-comentario" class="comment-textarea" required maxlength="400" placeholder="Escreva seu comentário ou recomendação como ${escaparHTML(usuario.nome)} (use #cursos, #arquitetura para mencionar)..."></textarea>
         <button type="submit" class="btn btn-primary btn-sm">Publicar Comentário →</button>
       </form>
     `;
@@ -1227,14 +1675,15 @@ function renderizarComentariosModal(idArtigo) {
       e.preventDefault();
       const txt = document.getElementById("texto-novo-comentario").value;
       if (txt.trim()) {
-        KELDE_DB.adicionarComentario(idArtigo, txt);
-        renderizarComentariosModal(idArtigo);
+        KELDE_DB.adicionarComentario(chaveAlvo, txt);
+        renderizarComentariosModal(chaveAlvo);
+        inicializarCanaisEPaginas();
       }
     });
   } else {
     areaForm.innerHTML = `
       <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 10px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
-        <span style="font-size: 0.9rem; color: var(--text-secondary);">🔐 Faça login para deixar um comentário neste artigo.</span>
+        <span style="font-size: 0.9rem; color: var(--text-secondary);">🔐 Faça login rápido para deixar uma recomendação ou comentário!</span>
         <button id="btn-login-comentar" type="button" class="btn btn-secondary btn-sm">Entrar / Criar Conta</button>
       </div>
     `;
@@ -1246,16 +1695,19 @@ function abrirArtigoNoModal(idArtigo) {
   const artigo = KELDE_DB.obterTodosArtigos().find((a) => Number(a.id) === Number(idArtigo));
   if (!artigo) return;
 
+  document.getElementById("btn-editar-direto-modal").style.display = "none";
   document.getElementById("modal-categoria").textContent = artigo.categoria;
+  document.getElementById("modal-slug-badge").textContent = `#${artigo.slug || "artigo"}`;
   document.getElementById("modal-data").textContent = artigo.data;
   document.getElementById("modal-tempo").textContent = "⏱ " + calcularTempoLeitura(artigo.conteudo);
   document.getElementById("modal-titulo").textContent = artigo.titulo;
   document.getElementById("modal-tags").innerHTML = artigo.tags
     .map((t) => `<span class="tag-chip">#${escaparHTML(t)}</span>`)
     .join("");
-  document.getElementById("modal-conteudo").innerHTML = artigo.conteudo;
+  document.getElementById("modal-conteudo").innerHTML = aplicarMencoesDiscord(artigo.conteudo);
+  document.getElementById("titulo-secao-comentarios").textContent = "💬 Discussão & Comentários da Comunidade";
 
-  renderizarComentariosModal(idArtigo);
+  renderizarComentariosModal(`artigo_${idArtigo}`);
 
   const modal = document.getElementById("modal-leitura");
   modal.classList.add("open");
